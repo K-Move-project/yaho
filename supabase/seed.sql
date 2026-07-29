@@ -89,17 +89,18 @@ on conflict (id) do nothing;
 
 -- ---------------------------------------------------------------------------
 -- courses
--- spot_ids는 schedule에 등장하는 스팟 중, 위 spots 시드에 실제로 존재하는 것만 연결한 부분 목록이다.
+-- schedule 각 단계에 lat/lng을 직접 포함한다 — 지도 동선은 이 좌표만 보고 그리므로
+-- spots 테이블에 없는 경유지(国際市場, 光復路 등)도 문제없이 표시된다.
+-- spot_id는 선택 항목으로, spots 테이블에 실제로 있는 경우에만 상세페이지 링크용으로 넣는다.
 -- ---------------------------------------------------------------------------
-insert into courses (id, title_ja, subtitle_ja, budget_level, budget_label, duration_label, spot_ids, schedule, tips_ja) values
+insert into courses (id, title_ja, subtitle_ja, budget_level, budget_label, duration_label, schedule, tips_ja) values
 ('cospa', '1日 コスパコース', '少ない予算で最大限楽しむ！', 1, '¥5,000〜', '1日（約7時間）',
-  ARRAY['biff','jagalchi','gamcheon'],
   '[
-    {"time":"9:00","spot":"南浦洞BIFF広場","duration":"60分","note":"映画祭の聖地。手形プリントで記念撮影♪","category":"tourist"},
-    {"time":"10:00","spot":"国際市場","duration":"45分","note":"釜山最大の在来市場。B級グルメや雑貨が充実","category":"food"},
-    {"time":"11:00","spot":"チャガルチ市場","duration":"90分","note":"新鮮な魚介を食べ比べ！海鮮丼は約¥900〜","category":"food"},
-    {"time":"13:00","spot":"甘川文化村","duration":"120分","note":"カラフルな壁画の村。フォト撮影に最適！","category":"tourist"},
-    {"time":"15:30","spot":"光復路","duration":"60分","note":"釜山一のショッピングストリート","category":"experience"}
+    {"time":"9:00","spot":"南浦洞BIFF広場","duration":"60分","note":"映画祭の聖地。手形プリントで記念撮影♪","category":"tourist","lat":35.0977,"lng":129.0306,"spot_id":"biff"},
+    {"time":"10:00","spot":"国際市場","duration":"45分","note":"釜山最大の在来市場。B級グルメや雑貨が充実","category":"food","lat":35.1000,"lng":129.0295},
+    {"time":"11:00","spot":"チャガルチ市場","duration":"90分","note":"新鮮な魚介を食べ比べ！海鮮丼は約¥900〜","category":"food","lat":35.0968,"lng":129.0306,"spot_id":"jagalchi"},
+    {"time":"13:00","spot":"甘川文化村","duration":"120分","note":"カラフルな壁画の村。フォト撮影に最適！","category":"tourist","lat":35.0975,"lng":129.0107,"spot_id":"gamcheon"},
+    {"time":"15:30","spot":"光復路","duration":"60分","note":"釜山一のショッピングストリート","category":"experience","lat":35.0986,"lng":129.0313}
   ]'::jsonb,
   ARRAY[
     '地下鉄1日乗車券（約¥560）を活用すると交通費を節約できます',
@@ -107,13 +108,12 @@ insert into courses (id, title_ja, subtitle_ja, budget_level, budget_label, dura
     '甘川文化村へはタクシーが便利（南浦洞から約10分・¥700程度）'
   ]),
 ('coastal', '2日 海沿いコース', '釜山の絶景ビーチを満喫！', 3, '¥8,000〜', '2日間',
-  ARRAY['gwangalli','haeundae','gijang'],
   '[
-    {"time":"DAY1 10:00","spot":"広安里海岸","duration":"90分","note":"広安大橋を望む絶景ビーチ。カフェ巡りも◎","category":"tourist"},
-    {"time":"DAY1 12:00","spot":"センタムシティ","duration":"120分","note":"世界最大規模のショッピングモールで昼食","category":"experience"},
-    {"time":"DAY1 15:00","spot":"海雲台ビーチ","duration":"120分","note":"韓国最大の砂浜でゆったりひと息","category":"tourist"},
-    {"time":"DAY2 9:00","spot":"松亭海水浴場","duration":"90分","note":"地元の人が集まる穴場ビーチ","category":"tourist"},
-    {"time":"DAY2 11:00","spot":"機張カニ市場","duration":"120分","note":"新鮮なカニを豪快に食す！¥2,000〜","category":"food"}
+    {"time":"DAY1 10:00","spot":"広安里海岸","duration":"90分","note":"広安大橋を望む絶景ビーチ。カフェ巡りも◎","category":"tourist","lat":35.1531,"lng":129.1186,"spot_id":"gwangalli"},
+    {"time":"DAY1 12:00","spot":"センタムシティ","duration":"120分","note":"世界最大規模のショッピングモールで昼食","category":"experience","lat":35.1691,"lng":129.1306},
+    {"time":"DAY1 15:00","spot":"海雲台ビーチ","duration":"120分","note":"韓国最大の砂浜でゆったりひと息","category":"tourist","lat":35.1587,"lng":129.1604,"spot_id":"haeundae"},
+    {"time":"DAY2 9:00","spot":"松亭海水浴場","duration":"90分","note":"地元の人が集まる穴場ビーチ","category":"tourist","lat":35.1783,"lng":129.1998},
+    {"time":"DAY2 11:00","spot":"機張カニ市場","duration":"120分","note":"新鮮なカニを豪快に食す！¥2,000〜","category":"food","lat":35.2444,"lng":129.2144,"spot_id":"gijang"}
   ]'::jsonb,
   ARRAY[
     '海雲台周辺のホテルに泊まると移動が楽です（¥3,000〜）',
@@ -121,13 +121,12 @@ insert into courses (id, title_ja, subtitle_ja, budget_level, budget_label, dura
     '機張カニは9〜11月がシーズン'
   ]),
 ('food-tour', 'グルメ集中コース', '釜山B級グルメを食べ歩き！', 2, '¥6,000〜', '1日（約8時間）',
-  ARRAY['jagalchi','milmyeon'],
   '[
-    {"time":"10:00","spot":"国際市場グルメ路地","duration":"60分","note":"釜山名物の屋台グルメを食べ歩き","category":"food"},
-    {"time":"11:30","spot":"チャガルチ海鮮","duration":"90分","note":"新鮮な海鮮を市場価格で堪能","category":"food"},
-    {"time":"14:00","spot":"光復路スイーツ","duration":"60分","note":"話題のカフェとスイーツ巡り","category":"food"},
-    {"time":"16:00","spot":"西面グルメ街","duration":"90分","note":"釜山っ子に人気のB級グルメが集結","category":"food"},
-    {"time":"18:30","spot":"海雲台屋台村","duration":"90分","note":"夜の屋台でシメのグルメを","category":"food"}
+    {"time":"10:00","spot":"国際市場グルメ路地","duration":"60分","note":"釜山名物の屋台グルメを食べ歩き","category":"food","lat":35.1000,"lng":129.0295},
+    {"time":"11:30","spot":"チャガルチ海鮮","duration":"90分","note":"新鮮な海鮮を市場価格で堪能","category":"food","lat":35.0968,"lng":129.0306,"spot_id":"jagalchi"},
+    {"time":"14:00","spot":"光復路スイーツ","duration":"60分","note":"話題のカフェとスイーツ巡り","category":"food","lat":35.0986,"lng":129.0313},
+    {"time":"16:00","spot":"西面グルメ街","duration":"90分","note":"釜山っ子に人気のB級グルメが集結","category":"food","lat":35.1578,"lng":129.0594,"spot_id":"milmyeon"},
+    {"time":"18:30","spot":"海雲台屋台村","duration":"90分","note":"夜の屋台でシメのグルメを","category":"food","lat":35.1587,"lng":129.1604,"spot_id":"haeundae"}
   ]'::jsonb,
   ARRAY[
     '空腹で挑むと食べすぎ注意！少量ずつ色々試すのがコツ',

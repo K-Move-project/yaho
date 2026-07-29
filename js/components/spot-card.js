@@ -22,11 +22,14 @@ export function spotCardHtml(spot, viewMode = "grid") {
     spot.rating != null
       ? `<span class="category-card__rating">${ICONS.star}<span>${spot.rating}</span></span>`
       : "";
+  const imageHtml = spot.image_url
+    ? `<img src="${spot.image_url}" alt="${spot.name_ja}" loading="lazy" />`
+    : `<div class="category-card__image-placeholder" style="background:${meta.bg};color:${meta.color}">${meta.label}</div>`;
 
   return `
     <a class="category-card category-card--${viewMode}" href="/pages/spot-detail.html?id=${encodeURIComponent(spot.id)}">
       <div class="category-card__image">
-        <img src="${spot.image_url ?? ""}" alt="${spot.name_ja}" loading="lazy" />
+        ${imageHtml}
       </div>
       <div class="category-card__body">
         <p class="category-card__name">${spot.name_ja}</p>

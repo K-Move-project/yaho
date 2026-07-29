@@ -54,6 +54,20 @@ function infoWindowHtml(spot, meta) {
   `;
 }
 
+function routeStepInfoWindowHtml(step) {
+  const link = step.spot_id
+    ? `<a class="map-infowindow__link" href="/pages/spot-detail.html?id=${encodeURIComponent(step.spot_id)}">詳細を見る →</a>`
+    : "";
+  return `
+    <div class="map-infowindow">
+      <span class="map-infowindow__badge" style="background:var(--color-primary-soft);color:var(--color-primary)">${step.time ?? ""}</span>
+      <p class="map-infowindow__name">${step.spot ?? ""}</p>
+      ${step.note ? `<p class="map-infowindow__area">${step.note}</p>` : ""}
+      ${link}
+    </div>
+  `;
+}
+
 function listItemHtml(spot, meta) {
   const ratingHtml = spot.rating != null ? `<span class="map-list-item__rating">${ICONS.star}${spot.rating}</span>` : "";
   return `
@@ -297,10 +311,10 @@ export async function renderMapPage(root) {
     const { data: course } = await fetchCourseById(courseId);
     if (!course) return;
 
-    const orderedSpots = (course.spot_ids ?? [])
-      .map((id) => allSpots.find((s) => s.id === id))
-      .filter(Boolean);
-    if (!orderedSpots.length) return;
+    // spot_ids 같은 별도 배열이 아니라 schedule에 직접 들어있는 좌표를 그대로 쓴다.
+    // (spots 테이블에 등록되지 않은 경유지도 문제없이 표시된다)
+    const steps = (course.schedule ?? []).filter((s) => s.lat != null && s.lng != null);
+    if (!steps.length) return;
 
     clearRoute();
 
@@ -308,17 +322,21 @@ export async function renderMapPage(root) {
     // ルート表示中は通常マーカーを全部隠す(スポットは左のリストで確認できる)。
     markersBySpotId.forEach((marker) => marker.setVisible(false));
 
-    routeMarkers = orderedSpots.map(
-      (spot, i) =>
-        new naver.maps.Marker({
-          position: new naver.maps.LatLng(spot.lat, spot.lng),
-          map,
-          icon: numberedMarkerIcon(naver, i + 1),
-          zIndex: 200,
-        })
-    );
+    routeMarkers = steps.map((step, i) => {
+      const marker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(step.lat, step.lng),
+        map,
+        icon: numberedMarkerIcon(naver, i + 1),
+        zIndex: 200,
+      });
+      naver.maps.Event.addListener(marker, "click", () => {
+        infoWindow.setContent(routeStepInfoWindowHtml(step));
+        infoWindow.open(map, marker);
+      });
+      return marker;
+    });
 
-    const path = orderedSpots.map((spot) => new naver.maps.LatLng(spot.lat, spot.lng));
+    const path = steps.map((step) => new naver.maps.LatLng(step.lat, step.lng));
     routePolyline = new naver.maps.Polyline({
       map,
       path,
@@ -334,7 +352,7 @@ export async function renderMapPage(root) {
 
     routeBannerEl.hidden = false;
     routeBannerEl.innerHTML = `
-      <span>${course.title_ja} のルート（${orderedSpots.length}カ所）</span>
+      <span>${course.title_ja} のルート（${steps.length}カ所）</span>
       <button type="button" data-clear-route aria-label="ルート表示を閉じる">×</button>
     `;
     routeBannerEl.querySelector("[data-clear-route]").addEventListener("click", clearRoute);

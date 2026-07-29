@@ -9,9 +9,7 @@ function extractDurationDays(durationLabel) {
   return match ? `${match[1]}日` : durationLabel ?? "";
 }
 
-// 코스 대표 이미지: courses 테이블에 image_url 컬럼이 없어(Phase 2 스키마 기준),
-// 코스 첫 스팟의 이미지를 courses.js 밖에서 별도 조회하지 않고, mock과 동일하게
-// spot_ids 첫 항목의 이미지를 쓰고 싶다면 join이 필요하다. 지금은 스키마 범위 내에서
+// 코스 대표 이미지: courses 테이블에 image_url 컬럼이 없어(Phase 2 스키마 기준)
 // 단색 그라디언트 플레이스홀더로 대체한다.
 function coursePlaceholderStyle(seed) {
   const hues = [204, 24, 152, 280];
@@ -33,7 +31,7 @@ function courseCardHtml(course, index) {
         <div class="course-card__meta">
           ${budgetLabel ? `<span class="course-card__pill">${budgetLabel}</span>` : ""}
           <span>${course.budget_label ?? ""}</span>
-          <span>${(course.spot_ids ?? []).length}スポット</span>
+          <span>${(course.schedule ?? []).length}スポット</span>
         </div>
       </div>
     </a>
