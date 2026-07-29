@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+
+# Env / secrets
+.env
+.env.local
+
+# Node (로컬 정적 서버용 도구를 쓸 경우에만 생성됨)
+node_modules/
+
+# Figma 원본 시안 (참고 자료, 저장소에 커밋하지 않음)
+1차 시안.zip

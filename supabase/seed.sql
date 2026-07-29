@@ -1,0 +1,1 @@
+-- Phase 2에서 spots / preferred_areas / courses / festivals 목 데이터로 채운다.
