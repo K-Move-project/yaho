@@ -64,6 +64,52 @@
   font-size: var(--font-size-sm);
 }
 
+.category-count__badge {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.category-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+  color: var(--color-text-faint);
+}
+
+.category-empty__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  color: var(--color-text-faint);
+}
+
+.category-empty__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.category-empty__reset {
+  padding: var(--space-2) var(--space-5);
+  border: none;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: #ffffff;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
 /* ---- 결과 카드: grid / list 공통 ---- */
 .category-results--grid {
   display: grid;
@@ -170,6 +216,13 @@
   width: 10px;
   height: 10px;
   flex-shrink: 0;
+}
+
+.category-card__desc {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
 }
 
 .category-card__tags {

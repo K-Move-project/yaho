@@ -45,16 +45,20 @@ function formatDateRange(start, end) {
   return start === end ? fmt(start) : `${fmt(start)} – ${fmt(end)}`;
 }
 
-function renderState(root, message, onRetry) {
+function renderState(root, message, onRetry, onBack) {
   const main = root.querySelector(".app-main__inner") ?? root;
   main.innerHTML = `
     <div class="state-message">
       <p>${message}</p>
       ${onRetry ? `<button type="button" class="state-message__retry" data-retry>再試行</button>` : ""}
+      ${onBack ? `<button type="button" class="state-message__retry" data-state-back>戻る</button>` : ""}
     </div>
   `;
   if (onRetry) {
     main.querySelector("[data-retry]").addEventListener("click", onRetry);
+  }
+  if (onBack) {
+    main.querySelector("[data-state-back]").addEventListener("click", onBack);
   }
 }
 
@@ -83,7 +87,7 @@ export async function renderEventDetailPage(root) {
   }
 
   if (!festival) {
-    renderState(root, "イベントが見つかりませんでした。");
+    renderState(root, "イベントが見つかりませんでした。", null, goBack);
     return;
   }
 
@@ -102,10 +106,10 @@ export async function renderEventDetailPage(root) {
     ${topbarTemplate(festival.title_ja)}
     <div class="app-main__inner event-detail">
       <div class="event-detail__hero">
-        <img src="${festival.image_url ?? ""}" alt="${festival.title_ja}" />
+        <img src="${festival.image_url ?? ""}" alt="${festival.title_ja}" onerror="this.closest('.event-detail__hero').style.background='var(--color-surface)';this.remove()" />
       </div>
 
-      <span class="event-detail__status" style="background:${meta.bg};color:${meta.color}">${meta.label}</span>
+      <span class="event-detail__status" style="background:${meta.bg};color:${meta.color}">${status === "ongoing" ? `<span class="event-detail__status-dot"></span>` : ""}${meta.label}</span>
       <h1 class="event-detail__name">${festival.title_ja}</h1>
       ${festival.title_sub_ko ? `<p class="event-detail__name-ko">${festival.title_sub_ko}</p>` : ""}
 
@@ -127,7 +131,7 @@ export async function renderEventDetailPage(root) {
           ? `
         <h2 class="event-detail__section-title">関連スポット</h2>
         <a class="event-detail__related-spot" href="/pages/spot-detail.html?id=${encodeURIComponent(relatedSpot.id)}">
-          <img src="${relatedSpot.image_url ?? ""}" alt="${relatedSpot.name_ja}" loading="lazy" />
+          <img src="${relatedSpot.image_url ?? ""}" alt="${relatedSpot.name_ja}" loading="lazy" onerror="this.style.display='none'" />
           <div>
             <p class="event-detail__related-spot-name">${relatedSpot.name_ja}</p>
             <p class="event-detail__related-spot-area">${relatedSpot.area ?? ""}</p>

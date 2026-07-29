@@ -101,16 +101,31 @@ function toNumberOrNull(v) {
   return Number.isFinite(n) && v !== "" ? n : null;
 }
 
-// area는 기존 수동 큐레이션 스팟들과 맞춰 "구/군" 수준의 짧은 값만 쓴다.
-// addr1을 그대로 쓰면 항목마다 다른 전체 도로명 주소가 들어가 지역 필터가
-// 사실상 무의미해지므로(항목당 거의 유니크), 시/도 다음에 오는 구/군 토큰만 뽑아낸다.
-function extractDistrict(addr1) {
-  if (!addr1) return null;
-  let m = addr1.match(/부산광역시\s*(\S+?[구군])/);
-  if (m) return m[1];
-  m = addr1.match(/広域市\s*(\S+?[区郡])/);
-  if (m) return m[1];
-  return addr1;
+// area는 부산 16개 구/군의 정식 한자 표기로 통일한다. addr1을 정규식으로
+// 파싱하면(구 버전) 일문 서비스가 지명을 가타카나 음역으로 주는 경우(例: ヘウンデ区)
+// 국문 큐레이션 스팟의 한자 표기(海雲台区)와 어긋난다. TourAPI areaCode2로 조회한
+// sigungucode(구/군 코드, 언어와 무관하게 동일)를 그대로 기준으로 삼는다.
+const SIGUNGU_TO_DISTRICT_JA = {
+  1: "江西区",
+  2: "金井区",
+  3: "機張郡",
+  4: "南区",
+  5: "東区",
+  6: "東莱区",
+  7: "釜山鎮区",
+  8: "北区",
+  9: "沙上区",
+  10: "沙下区",
+  11: "西区",
+  12: "水営区",
+  13: "蓮堤区",
+  14: "影島区",
+  15: "中区",
+  16: "海雲台区",
+};
+
+function sigunguToDistrict(sigungucode) {
+  return SIGUNGU_TO_DISTRICT_JA[Number(sigungucode)] ?? null;
 }
 
 async function main() {
@@ -151,6 +166,9 @@ async function main() {
       const lng = toNumberOrNull(primary.mapx);
       if (!lat || !lng) return null; // 좌표 없는 항목은 지도에 못 띄우므로 제외
 
+      const image_url = primary.firstimage || primary.firstimage2 || null;
+      if (!image_url) return null; // 사진 없는 항목은 추천 목록에서 볼거리가 없으므로 제외
+
       return {
         id: `tour-${contentId}`,
         name_ko: kor?.title && kor.title !== primary.title ? kor.title : null,
@@ -158,8 +176,8 @@ async function main() {
         category,
         lat,
         lng,
-        area: extractDistrict(primary.addr1),
-        image_url: primary.firstimage || primary.firstimage2 || null,
+        area: sigunguToDistrict(primary.sigungucode),
+        image_url,
         isKoreanOnly: !jpn,
       };
     })

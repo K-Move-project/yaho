@@ -22,9 +22,14 @@ export function spotCardHtml(spot, viewMode = "grid") {
     spot.rating != null
       ? `<span class="category-card__rating">${ICONS.star}<span>${spot.rating}</span></span>`
       : "";
+  const placeholderHtml = `<div class="category-card__image-placeholder" style="display:none;background:${meta.bg};color:${meta.color}">${meta.label}</div>`;
   const imageHtml = spot.image_url
-    ? `<img src="${spot.image_url}" alt="${spot.name_ja}" loading="lazy" />`
+    ? `<img src="${spot.image_url}" alt="${spot.name_ja}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />${placeholderHtml}`
     : `<div class="category-card__image-placeholder" style="background:${meta.bg};color:${meta.color}">${meta.label}</div>`;
+  const descHtml =
+    viewMode === "list" && spot.description_ja
+      ? `<p class="category-card__desc">${spot.description_ja}</p>`
+      : "";
 
   return `
     <a class="category-card category-card--${viewMode}" href="/pages/spot-detail.html?id=${encodeURIComponent(spot.id)}">
@@ -34,6 +39,7 @@ export function spotCardHtml(spot, viewMode = "grid") {
       <div class="category-card__body">
         <p class="category-card__name">${spot.name_ja}</p>
         <div class="category-card__area">${ICONS.mapPin}<span>${spot.area ?? ""}</span></div>
+        ${descHtml}
         <div class="category-card__tags">${tagHtml}</div>
         <div class="category-card__foot">${ratingHtml}${priceHtml}</div>
       </div>

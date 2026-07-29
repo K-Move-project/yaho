@@ -78,7 +78,7 @@ export async function renderSpotDetailPage(root) {
   }
 
   if (!spot) {
-    renderState(root, "スポットが見つかりませんでした。");
+    renderState(root, "スポットが見つかりませんでした。", null, goBack);
     return;
   }
 
@@ -90,7 +90,7 @@ export async function renderSpotDetailPage(root) {
     ${topbarTemplate(spot.name_ja)}
     <div class="app-main__inner spot-detail">
       <div class="spot-detail__hero">
-        <img src="${spot.image_url ?? ""}" alt="${spot.name_ja}" />
+        <img src="${spot.image_url ?? ""}" alt="${spot.name_ja}" onerror="this.closest('.spot-detail__hero').style.background='var(--color-surface)';this.remove()" />
       </div>
 
       <div class="spot-detail__head">
@@ -129,15 +129,19 @@ export async function renderSpotDetailPage(root) {
   root.querySelector("[data-back]").addEventListener("click", goBack);
 }
 
-function renderState(root, message, onRetry) {
+function renderState(root, message, onRetry, onBack) {
   const main = root.querySelector(".app-main__inner") ?? root;
   main.innerHTML = `
     <div class="state-message">
       <p>${message}</p>
       ${onRetry ? `<button type="button" class="state-message__retry" data-retry>再試行</button>` : ""}
+      ${onBack ? `<button type="button" class="state-message__retry" data-state-back>戻る</button>` : ""}
     </div>
   `;
   if (onRetry) {
     main.querySelector("[data-retry]").addEventListener("click", onRetry);
+  }
+  if (onBack) {
+    main.querySelector("[data-state-back]").addEventListener("click", onBack);
   }
 }

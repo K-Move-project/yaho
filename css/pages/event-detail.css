@@ -18,12 +18,27 @@
 }
 
 .event-detail__status {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin-top: var(--space-4);
   padding: 4px var(--space-3);
   border-radius: var(--radius-full);
   font-size: 0.75rem;
   font-weight: 700;
+}
+
+.event-detail__status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
 }
 
 .event-detail__name {

@@ -5,6 +5,8 @@
  * 실제 Supabase 연동은 Phase 2 이후에 이 mock 데이터를 대체한다.
  */
 
+import { CATEGORY_META } from "../constants/categories.js";
+
 const ICONS = {
   search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
   navigation: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 21 3 13 21 11 13 3 11"/></svg>',
@@ -14,18 +16,9 @@ const ICONS = {
   trendingUp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>',
   calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9.5h17M8 3v3M16 3v3"/></svg>',
   clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>',
-  camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h1.2l1-1.6A1.5 1.5 0 0 1 9.5 3.7h5a1.5 1.5 0 0 1 1.3.7l1 1.6H18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><circle cx="12" cy="13" r="3.5"/></svg>',
-  utensils: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a2 2 0 0 0 2 2v9M6 3v7M9 3v7M12 3v18M20 3c-2.2 0-4 2.2-4 6.5S17.8 15 20 15V3Z"/></svg>',
-  hotel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v15M3 21h18M9 21v-5h6v5M14 6h6a1 1 0 0 1 1 1v14M6 9h.01M6 12h.01M6 15h.01"/></svg>',
-  sparkles: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>',
 };
 
-const CATEGORIES = [
-  { id: "tourist", label: "観光地", color: "#2b9bf4", bg: "#ebf5ff", icon: ICONS.camera },
-  { id: "food", label: "グルメ", color: "#f47c2b", bg: "#fff3e8", icon: ICONS.utensils },
-  { id: "stay", label: "宿泊", color: "#2bbf8a", bg: "#e8fbf4", icon: ICONS.hotel },
-  { id: "experience", label: "体験", color: "#a02bf4", bg: "#f4ebff", icon: ICONS.sparkles },
-];
+const CATEGORIES = Object.entries(CATEGORY_META).map(([id, meta]) => ({ id, ...meta }));
 
 const POPULAR_AREAS = [
   {

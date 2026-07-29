@@ -32,7 +32,7 @@ insert into spots (id, name_ko, name_ja, category, lat, lng, area, description_j
   ARRAY['海鮮','市場','新鮮'],
   'https://images.unsplash.com/photo-1628532429788-c35922b5e6c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400',
   4.6, '¥1,000〜', null, null),
-('milmyeon', null, '釜山ミルミョン通り', 'food', 35.1578, 129.0594, '西面',
+('milmyeon', null, '釜山ミルミョン通り', 'food', 35.1578, 129.0594, '釜山鎮区',
   '釜山名物のミルミョン（冷麺）が味わえる、地元で人気の食堂が集まる通りです。',
   ARRAY['麺料理','B級グルメ','地元'],
   'https://images.unsplash.com/photo-1549282138-86f0a2e1b8ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400',
@@ -57,12 +57,12 @@ insert into spots (id, name_ko, name_ja, category, lat, lng, area, description_j
   ARRAY['映画','エンタメ','文化'],
   'https://images.unsplash.com/photo-1695730435725-861079fcf917?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400',
   4.5, null, null, null),
-('kpop', null, 'K-POPダンス体験', 'experience', 35.1578, 129.0594, '西面',
+('kpop', null, 'K-POPダンス体験', 'experience', 35.1578, 129.0594, '釜山鎮区',
   '本格的なK-POPダンスレッスンが受けられる、旅行者にも人気の体験スタジオです。',
   ARRAY['K-POP','ダンス','体験'],
   'https://images.unsplash.com/photo-1601900245655-7719650f5b7a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400',
   4.7, '¥2,000〜', null, null),
-('hanbok', null, '韓服レンタル体験', 'experience', 35.0985, 129.0312, '南浦洞',
+('hanbok', null, '韓服レンタル体験', 'experience', 35.0985, 129.0312, '中区',
   '伝統韓服を着て街歩きができる人気の体験。フォトスポット巡りにおすすめです。',
   ARRAY['韓服','伝統','フォト'],
   'https://images.unsplash.com/photo-1711887540798-9d7d720e5319?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400',
@@ -93,7 +93,7 @@ on conflict (id) do nothing;
 -- spots 테이블에 없는 경유지(国際市場, 光復路 등)도 문제없이 표시된다.
 -- spot_id는 선택 항목으로, spots 테이블에 실제로 있는 경우에만 상세페이지 링크용으로 넣는다.
 -- ---------------------------------------------------------------------------
-insert into courses (id, title_ja, subtitle_ja, budget_level, budget_label, duration_label, schedule, tips_ja) values
+insert into courses (id, title_ja, subtitle_ja, budget_level, budget_label, duration_label, schedule, tips_ja, image_url, rating, tags, description_ja) values
 ('cospa', '1日 コスパコース', '少ない予算で最大限楽しむ！', 1, '¥5,000〜', '1日（約7時間）',
   '[
     {"time":"9:00","spot":"南浦洞BIFF広場","duration":"60分","note":"映画祭の聖地。手形プリントで記念撮影♪","category":"tourist","lat":35.0977,"lng":129.0306,"spot_id":"biff"},
@@ -106,7 +106,11 @@ insert into courses (id, title_ja, subtitle_ja, budget_level, budget_label, dura
     '地下鉄1日乗車券（約¥560）を活用すると交通費を節約できます',
     'チャガルチ市場は午前中が食材が新鮮でおすすめ',
     '甘川文化村へはタクシーが便利（南浦洞から約10分・¥700程度）'
-  ]),
+  ],
+  'https://images.unsplash.com/photo-1628532429788-c35922b5e6c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600',
+  4.8,
+  ARRAY['コスパ抜群', 'ローカル体験', 'フォトスポット多数'],
+  '釜山を初めて訪れる方にも、リピーターの方にもおすすめの鉄板コース。交通費+食費込みで¥5,000以内を目指せます。'),
 ('coastal', '2日 海沿いコース', '釜山の絶景ビーチを満喫！', 3, '¥8,000〜', '2日間',
   '[
     {"time":"DAY1 10:00","spot":"広安里海岸","duration":"90分","note":"広安大橋を望む絶景ビーチ。カフェ巡りも◎","category":"tourist","lat":35.1531,"lng":129.1186,"spot_id":"gwangalli"},
@@ -119,7 +123,11 @@ insert into courses (id, title_ja, subtitle_ja, budget_level, budget_label, dura
     '海雲台周辺のホテルに泊まると移動が楽です（¥3,000〜）',
     '広安大橋の夜景は必見！夕方以降に訪れましょう',
     '機張カニは9〜11月がシーズン'
-  ]),
+  ],
+  'https://images.unsplash.com/photo-1591520284162-8e64eceebacf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600',
+  4.7,
+  ARRAY['絶景ビーチ', '海鮮グルメ', '夜景'],
+  '釜山の美しい海岸線を2日間かけてじっくり巡るコース。夕日・夜景・海鮮グルメを全部制覇！'),
 ('food-tour', 'グルメ集中コース', '釜山B級グルメを食べ歩き！', 2, '¥6,000〜', '1日（約8時間）',
   '[
     {"time":"10:00","spot":"国際市場グルメ路地","duration":"60分","note":"釜山名物の屋台グルメを食べ歩き","category":"food","lat":35.1000,"lng":129.0295},
@@ -132,7 +140,11 @@ insert into courses (id, title_ja, subtitle_ja, budget_level, budget_label, dura
     '空腹で挑むと食べすぎ注意！少量ずつ色々試すのがコツ',
     'ミルミョン（밀면）とオムク（어묵）は釜山名物なので必食',
     '現金（ウォン）を多めに用意しておきましょう'
-  ])
+  ],
+  'https://images.unsplash.com/photo-1549282138-86f0a2e1b8ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600',
+  4.9,
+  ARRAY['食べ歩き', '地元グルメ', '低予算'],
+  '釜山のB級グルメを一日かけて食べ歩き。ミルミョンやオムクなど必食グルメを制覇！')
 on conflict (id) do nothing;
 
 -- ---------------------------------------------------------------------------

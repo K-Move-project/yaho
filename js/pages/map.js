@@ -27,11 +27,11 @@ function loadNaverMapsSdk(clientId) {
   });
 }
 
-function markerIconHtml(color) {
+function markerIconHtml(naver, meta) {
   return {
-    content: `<div style="width:22px;height:22px;border-radius:50% 50% 50% 0;background:${color};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);transform:rotate(-45deg);"></div>`,
-    size: new window.naver.maps.Size(22, 22),
-    anchor: new window.naver.maps.Point(11, 22),
+    content: `<div style="width:28px;height:28px;border-radius:50% 50% 50% 0;background:${meta.color};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;"><span class="map-marker-icon" style="display:block;transform:rotate(45deg);color:#fff;">${meta.icon}</span></div>`,
+    size: new naver.maps.Size(28, 28),
+    anchor: new naver.maps.Point(14, 28),
   };
 }
 
@@ -91,14 +91,8 @@ function listItemHtml(spot, meta) {
   const ratingHtml = spot.rating != null ? `<span class="map-list-item__rating">${ICONS.star}${spot.rating}</span>` : "";
   return `
     <button type="button" class="map-list-item" data-spot-id="${spot.id}">
-      <img class="map-list-item__thumb" src="${spot.image_url ?? ""}" alt="" loading="lazy" />
-      <div class="map-list-item__body">
-        <p class="map-list-item__name">${spot.name_ja}</p>
-        <div class="map-list-item__meta">
-          <span class="map-list-item__badge" style="background:${meta.bg};color:${meta.color}">${meta.label}</span>
-          <span>${spot.area ?? ""}</span>
-        </div>
-      </div>
+      <span class="map-list-item__icon" style="background:${meta.bg};color:${meta.color}">${meta.icon}</span>
+      <p class="map-list-item__name">${spot.name_ja}</p>
       ${ratingHtml}
     </button>
   `;
@@ -192,7 +186,7 @@ export async function renderMapPage(root) {
         const marker = new naver.maps.Marker({
           position: new naver.maps.LatLng(spot.lat, spot.lng),
           map,
-          icon: markerIconHtml(meta.color),
+          icon: markerIconHtml(naver, meta),
           title: spot.name_ja,
         });
         naver.maps.Event.addListener(marker, "click", () => focusSpot(spot, marker));
@@ -216,7 +210,7 @@ export async function renderMapPage(root) {
         const marker = new naver.maps.Marker({
           position: new naver.maps.LatLng(spot.lat, spot.lng),
           map,
-          icon: markerIconHtml(meta.color),
+          icon: markerIconHtml(naver, meta),
           title: spot.name_ja,
         });
         naver.maps.Event.addListener(marker, "click", () => focusSpot(spot, marker));

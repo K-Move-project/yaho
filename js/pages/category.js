@@ -1,6 +1,7 @@
 import { supabase } from "../supabaseClient.js";
 import { fetchSpotsByCategory } from "../api/spots.js";
 import { CATEGORY_META } from "../constants/categories.js";
+import { BUSAN_DISTRICTS } from "../constants/districts.js";
 import { spotCardHtml } from "../components/spot-card.js";
 
 const ICONS = {
@@ -8,6 +9,7 @@ const ICONS = {
   search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
   grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>',
   list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
+  emptySearch: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
 };
 
 const ALL_AREAS = "すべて";
@@ -111,7 +113,9 @@ export async function renderCategoryPage(root) {
   }
 
   function renderAreaFilter() {
-    const areas = [ALL_AREAS, ...new Set(state.allSpots.map((s) => s.area).filter(Boolean))];
+    // 데이터에 있는 구/군만 보여주면 아직 스팟이 없는 구는 필터에서 계속 빠지므로,
+    // 부산 16개 구/군 고정 목록을 항상 보여준다 (실제 행정구역 기준).
+    const areas = [ALL_AREAS, ...BUSAN_DISTRICTS];
     areaFilterEl.innerHTML = areas
       .map((area) => {
         const isActive = area === state.area;
@@ -132,11 +136,30 @@ export async function renderCategoryPage(root) {
 
   function renderResults() {
     const filtered = getFilteredSpots();
-    countEl.textContent = `${filtered.length}件のスポット`;
+    const areaBadge =
+      state.area !== ALL_AREAS
+        ? `<span class="category-count__badge" style="background:${meta.color}20;color:${meta.color}">${state.area}</span>`
+        : "";
+    countEl.innerHTML = `${filtered.length}件のスポット${areaBadge}`;
     resultsEl.className = `category-results category-results--${state.viewMode}`;
     resultsEl.innerHTML = filtered.length
       ? filtered.map((spot) => spotCardHtml(spot, state.viewMode)).join("")
-      : `<p class="state-message">条件に一致するスポットが見つかりませんでした。</p>`;
+      : `
+        <div class="category-empty">
+          <span class="category-empty__icon">${ICONS.emptySearch}</span>
+          <p>条件に一致するスポットが見つかりませんでした</p>
+          <button type="button" class="category-empty__reset" data-reset-filter>フィルターをリセット</button>
+        </div>
+      `;
+
+    const resetBtn = resultsEl.querySelector("[data-reset-filter]");
+    resetBtn?.addEventListener("click", () => {
+      state.area = ALL_AREAS;
+      state.keyword = "";
+      searchInput.value = "";
+      renderAreaFilter();
+      renderResults();
+    });
   }
 
   if (!supabase) {

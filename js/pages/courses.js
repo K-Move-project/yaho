@@ -3,36 +3,80 @@ import { fetchAllCourses } from "../api/courses.js";
 
 const ALL = "すべて";
 const BUDGET_LEVEL_LABEL = { 1: "節約", 2: "標準", 3: "ゆったり" };
+const DIFFICULTY = {
+  easy: { label: "やさしい", color: "#2bbf8a" },
+  normal: { label: "ふつう", color: "#f47c2b" },
+};
+
+const ICONS = {
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>',
+  wallet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14.5" r="1"/></svg>',
+  mapPin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-7.1-7-12a7 7 0 0 1 14 0c0 4.9-7 12-7 12Z"/><circle cx="12" cy="9" r="2.4"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.5 15 9l7 .9-5.1 4.7L18.2 21 12 17.3 5.8 21l1.3-6.4L2 9.9 9 9z"/></svg>',
+};
 
 function extractDurationDays(durationLabel) {
   const match = durationLabel?.match(/^(\d+)日/);
   return match ? `${match[1]}日` : durationLabel ?? "";
 }
 
-// 코스 대표 이미지: courses 테이블에 image_url 컬럼이 없어(Phase 2 스키마 기준)
-// 단색 그라디언트 플레이스홀더로 대체한다.
-function coursePlaceholderStyle(seed) {
-  const hues = [204, 24, 152, 280];
-  const hue = hues[seed % hues.length];
-  return `background:linear-gradient(135deg, hsl(${hue} 70% 55%) 0%, hsl(${hue} 70% 40%) 100%)`;
+function computeDifficulty(course) {
+  const days = Number(extractDurationDays(course.duration_label)?.replace("日", "")) || 1;
+  return days >= 2 ? DIFFICULTY.normal : DIFFICULTY.easy;
 }
 
-function courseCardHtml(course, index) {
+function routePreviewHtml(schedule) {
+  if (!schedule.length) return "";
+  const shown = schedule.slice(0, 4);
+  const remaining = schedule.length - shown.length;
+  const steps = shown
+    .map(
+      (step, i) =>
+        `<span class="course-card__route-step"><span class="course-card__route-num">${i + 1}</span>${step.spot ?? ""}</span>`
+    )
+    .join(`<span class="course-card__route-arrow">›</span>`);
+  const more = remaining > 0 ? `<span class="course-card__route-more">+${remaining}</span>` : "";
+  return `<div class="course-card__route">${steps}${more}</div>`;
+}
+
+function courseCardHtml(course) {
   const durationDays = extractDurationDays(course.duration_label);
-  const budgetLabel = BUDGET_LEVEL_LABEL[course.budget_level] ?? "";
+  const difficulty = computeDifficulty(course);
+  const tags = course.tags ?? [];
+  const schedule = course.schedule ?? [];
+
+  const imageHtml = course.image_url
+    ? `<img src="${course.image_url}" alt="${course.title_ja}" loading="lazy" onerror="this.style.display='none'" />`
+    : "";
+  const ratingHtml =
+    course.rating != null ? `<span class="course-card__rating">${ICONS.star}<span>${course.rating}</span></span>` : "";
+  const tagsOverlay = tags.length
+    ? `<div class="course-card__tags-overlay">${tags
+        .slice(0, 3)
+        .map((t) => `<span>${t}</span>`)
+        .join("")}</div>`
+    : "";
+
   return `
     <a class="course-card" href="/pages/course-detail.html?id=${encodeURIComponent(course.id)}">
-      <div class="course-card__image" style="${coursePlaceholderStyle(index)}">
-        <span>${course.duration_label ?? ""}</span>
+      <div class="course-card__image">
+        ${imageHtml}
+        ${ratingHtml}
+        ${tagsOverlay}
       </div>
       <div class="course-card__body">
-        <p class="course-card__title">${course.title_ja}</p>
-        ${course.subtitle_ja ? `<p class="course-card__subtitle">${course.subtitle_ja}</p>` : ""}
-        <div class="course-card__meta">
-          ${budgetLabel ? `<span class="course-card__pill">${budgetLabel}</span>` : ""}
-          <span>${course.budget_label ?? ""}</span>
-          <span>${(course.schedule ?? []).length}スポット</span>
+        <div class="course-card__head">
+          <p class="course-card__title">${course.title_ja}</p>
+          <span class="course-card__difficulty" style="background:${difficulty.color}20;color:${difficulty.color}">${difficulty.label}</span>
         </div>
+        ${course.subtitle_ja ? `<p class="course-card__subtitle">${course.subtitle_ja}</p>` : ""}
+        ${course.description_ja ? `<p class="course-card__desc">${course.description_ja}</p>` : ""}
+        <div class="course-card__meta">
+          <span>${ICONS.clock}${durationDays}</span>
+          <span>${ICONS.wallet}${course.budget_label ?? ""}</span>
+          <span>${ICONS.mapPin}${schedule.length}スポット</span>
+        </div>
+        ${routePreviewHtml(schedule)}
       </div>
     </a>
   `;
@@ -138,8 +182,22 @@ export async function renderCoursesPage(root) {
     countEl.textContent = `${filtered.length}件のコース`;
     resultsEl.className = "courses-list";
     resultsEl.innerHTML = filtered.length
-      ? filtered.map((c, i) => courseCardHtml(c, i)).join("")
-      : `<p class="state-message">条件に一致するコースが見つかりませんでした。</p>`;
+      ? filtered.map((c) => courseCardHtml(c)).join("")
+      : `
+        <div class="category-empty">
+          <p>条件に一致するコースが見つかりませんでした</p>
+          <button type="button" class="category-empty__reset" data-reset-course-filter>フィルターをリセット</button>
+        </div>
+      `;
+
+    const resetBtn = resultsEl.querySelector("[data-reset-course-filter]");
+    resetBtn?.addEventListener("click", () => {
+      activeBudget = ALL;
+      activeDuration = ALL;
+      renderBudgetFilter();
+      renderDurationFilter();
+      renderResults();
+    });
   }
 
   renderBudgetFilter();
