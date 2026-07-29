@@ -10,14 +10,16 @@
   <div id="app-header"></div>
 
   <main class="app-main">
-    <p class="placeholder-notice">イベント詳細ページは Phase 6 で実装予定です。</p>
+    <div class="app-main__inner">
+      <p class="placeholder-notice">イベント詳細ページは Phase 6 で実装予定です。</p>
+    </div>
   </main>
 
   <div id="app-tabbar"></div>
 
   <script type="module">
     import { initNav } from "/js/nav.js";
-    initNav({ title: "イベント詳細", page: null, showBack: true });
+    initNav(null);
   </script>
 </body>
 </html>

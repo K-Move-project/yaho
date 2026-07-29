@@ -1,36 +1,49 @@
 /**
- * 공통 헤더 / 하단 탭바 주입 모듈.
+ * 공통 헤더 / 하단 탭바(모바일) / 인라인 탭(데스크톱) 주입 모듈.
  * 각 페이지는 <div id="app-header"></div>, <div id="app-tabbar"></div>를
  * 마크업에 두고, 아래처럼 호출한다:
  *
  *   import { initNav } from '/js/nav.js';
- *   initNav({ page: 'home', title: '釜山やっほー' });
- *   initNav({ page: null, title: 'スポット詳細', showBack: true });
+ *   initNav('home');       // 홈 탭 활성화
+ *   initNav(null);          // 탭에 속하지 않는 상세 페이지 (뒤로가기는 각 페이지에서 자체 구현)
  */
 
 const ICONS = {
-  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1v-9"/></svg>',
-  map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-7.1-7-12a7 7 0 0 1 14 0c0 4.9-7 12-7 12Z"/><circle cx="12" cy="9" r="2.4"/></svg>',
-  events: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
-  courses: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M6 17V13a4 4 0 0 1 4-4h4a4 4 0 0 0 4-4"/></svg>',
-  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  logo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15c1.6 1.2 3.2 1.2 4.8 0 1.6-1.2 3.2-1.2 4.8 0 1.6 1.2 3.2 1.2 4.8 0 1.6-1.2 3.2-1.2 4.8 0"/><path d="M2 19c1.6 1.2 3.2 1.2 4.8 0 1.6-1.2 3.2-1.2 4.8 0 1.6 1.2 3.2 1.2 4.8 0 1.6-1.2 3.2-1.2 4.8 0"/><path d="M7 11c-1.5-1.7-1.5-4.3 0-6 1.8 1 3 2.8 3 5 2-2 2-5 0-7"/></svg>',
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20a1 1 0 0 0 1 1H9v-6h6v6h2.5a1 1 0 0 0 1-1V9.5"/></svg>',
+  map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.1 5.6a2 2 0 0 0 1.8 0l3.6-1.8A1 1 0 0 1 21 4.6v12.8a1 1 0 0 1-.6.9l-4.5 2.3a2 2 0 0 1-1.8 0l-4.2-2.1a2 2 0 0 0-1.8 0l-3.7 1.8A1 1 0 0 1 3 19.4V6.6a1 1 0 0 1 .6-.9l4.5-2.3a2 2 0 0 1 1.8 0z"/><path d="M15 5.8v15"/><path d="M9 3.2v15"/></svg>',
+  events: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9.5h17M8 3v3M16 3v3"/></svg>',
+  courses: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 21 3 13 21 11 13 3 11"/></svg>',
 };
 
 const TABS = [
   { key: "home", label: "ホーム", href: "/index.html", icon: ICONS.home },
   { key: "map", label: "地図", href: "/pages/map.html", icon: ICONS.map },
-  { key: "events", label: "イベント", href: "/pages/events.html", icon: ICONS.events },
-  { key: "courses", label: "コース", href: "/pages/courses.html", icon: ICONS.courses },
+  { key: "events", label: "行事・お祭り", href: "/pages/events.html", icon: ICONS.events },
+  { key: "courses", label: "おすすめコース", href: "/pages/courses.html", icon: ICONS.courses },
 ];
 
-function renderHeader({ title, showBack }) {
-  const backButton = showBack
-    ? `<button type="button" class="app-header__back" data-nav-back aria-label="戻る">${ICONS.back}</button>`
-    : "";
+function renderHeader(activePage) {
+  const navItems = TABS.map((tab) => {
+    const isActive = tab.key === activePage;
+    return `
+      <a class="app-header__nav-item${isActive ? " is-active" : ""}" href="${tab.href}">
+        ${tab.icon}
+        <span>${tab.label}</span>
+      </a>
+    `;
+  }).join("");
+
   return `
     <header class="app-header">
-      ${backButton}
-      <span class="app-header__title">${title}</span>
+      <a class="app-header__brand" href="/index.html">
+        <span class="app-header__logo">${ICONS.logo}</span>
+        <span>
+          <span class="app-header__title">釜山 야-호-</span><br />
+          <span class="app-header__subtitle">BUSAN TRAVEL GUIDE</span>
+        </span>
+      </a>
+      <nav class="app-header__nav">${navItems}</nav>
     </header>
   `;
 }
@@ -49,32 +62,16 @@ function renderTabBar(activePage) {
 }
 
 /**
- * @param {Object} options
- * @param {string} options.title 헤더에 표시할 제목
- * @param {'home'|'map'|'events'|'courses'|null} [options.page] 활성 탭 (탭에 속하지 않는 상세 페이지는 null)
- * @param {boolean} [options.showBack] 뒤로가기 버튼 표시 여부
+ * @param {'home'|'map'|'events'|'courses'|null} activePage 활성 탭 (탭에 속하지 않는 상세 페이지는 null)
  */
-export function initNav({ title, page = null, showBack = false }) {
+export function initNav(activePage = null) {
   const headerEl = document.getElementById("app-header");
   const tabbarEl = document.getElementById("app-tabbar");
 
   if (headerEl) {
-    headerEl.outerHTML = renderHeader({ title, showBack });
+    headerEl.outerHTML = renderHeader(activePage);
   }
   if (tabbarEl) {
-    tabbarEl.outerHTML = renderTabBar(page);
-  }
-
-  if (showBack) {
-    const backBtn = document.querySelector("[data-nav-back]");
-    if (backBtn) {
-      backBtn.addEventListener("click", () => {
-        if (window.history.length > 1) {
-          window.history.back();
-        } else {
-          window.location.href = "/index.html";
-        }
-      });
-    }
+    tabbarEl.outerHTML = renderTabBar(activePage);
   }
 }

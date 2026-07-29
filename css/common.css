@@ -1,27 +1,30 @@
 /* ==========================================================================
    부산 야-호- (釜山 やっほー) — 공통 스타일
-   색상/타이포/spacing 값은 Phase 1에서 Figma 시안(1차_시안.zip)을 참고해
-   실제 브랜드 값으로 교체한다. 지금은 임시 기본값이다.
+   색상/타이포/spacing 값은 Figma 시안(1차_시안.zip)의 HomePage.tsx / App.tsx에서
+   추출한 값을 기준으로 한다.
    ========================================================================== */
 
 :root {
   /* Color */
-  --color-primary: #0ea5e9;
-  --color-primary-dark: #0284c7;
-  --color-accent: #f97316;
+  --color-primary: #2b9bf4;
+  --color-primary-dark: #1a6db8;
+  --color-primary-soft: #ebf5ff;
+  --color-accent: #f47c2b;
   --color-bg: #ffffff;
-  --color-surface: #f8fafc;
-  --color-border: #e2e8f0;
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
+  --color-surface: #f0f6ff;
+  --color-border: #e2edff;
+  --color-text: #1a1a2e;
+  --color-text-muted: #6b7280;
+  --color-text-faint: #9ca3af;
   --color-text-inverse: #ffffff;
 
   /* Typography */
   --font-family-base: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic",
     -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-size-xs: 0.6875rem;
   --font-size-sm: 0.8125rem;
   --font-size-base: 0.9375rem;
-  --font-size-lg: 1.125rem;
+  --font-size-lg: 1.0625rem;
   --font-size-xl: 1.375rem;
 
   /* Spacing */
@@ -34,13 +37,14 @@
 
   /* Layout */
   --header-height: 56px;
-  --tabbar-height: 64px;
-  --radius-sm: 8px;
-  --radius-md: 14px;
+  --tabbar-height: 62px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
   --radius-lg: 20px;
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
-  --max-content-width: 480px;
+  --radius-full: 999px;
+  --shadow-sm: 0 1px 2px rgba(26, 26, 46, 0.06);
+  --shadow-md: 0 4px 16px rgba(26, 26, 46, 0.08);
+  --max-content-width: 1024px;
 }
 
 *,
@@ -88,14 +92,28 @@ button {
   cursor: pointer;
 }
 
-/* App shell: 모바일 퍼스트, 가운데 정렬된 카드형 컨테이너 */
+/* App shell: .app-main은 full-bleed 배경(히어로 등)을 위해 좌우 패딩이 없다.
+   실제 콘텐츠는 .app-main__inner로 감싸 중앙 정렬 + 좌우 패딩을 적용한다. */
 .app-main {
   flex: 1;
   width: 100%;
+  padding-bottom: calc(var(--tabbar-height) + var(--space-4));
+}
+
+.app-main__inner {
   max-width: var(--max-content-width);
   margin: 0 auto;
-  padding: var(--space-4);
-  padding-bottom: calc(var(--tabbar-height) + var(--space-4));
+  padding: 0 var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .app-main__inner {
+    padding: 0 var(--space-6);
+  }
+
+  .app-main {
+    padding-bottom: 0;
+  }
 }
 
 .placeholder-notice {
@@ -115,40 +133,81 @@ button {
   z-index: 20;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  justify-content: space-between;
+  gap: var(--space-3);
   height: var(--header-height);
   padding: 0 var(--space-4);
   background-color: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
 }
 
-.app-header__back {
-  display: inline-flex;
+.app-header__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.app-header__logo {
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
-  border: none;
-  background: none;
-  color: var(--color-text);
   border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  flex-shrink: 0;
 }
 
-.app-header__back:hover {
-  background-color: var(--color-surface);
+.app-header__logo svg {
+  width: 17px;
+  height: 17px;
+  color: #ffffff;
 }
 
 .app-header__title {
-  flex: 1;
-  font-size: var(--font-size-lg);
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.1;
   color: var(--color-text);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-/* ---- 공통 하단 탭바 (js/nav.js가 주입) ---- */
+.app-header__subtitle {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+}
+
+/* 데스크톱 인라인 탭 (모바일에서는 숨김) */
+.app-header__nav {
+  display: none;
+  align-items: center;
+  gap: 2px;
+}
+
+.app-header__nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.app-header__nav-item svg {
+  width: 15px;
+  height: 15px;
+}
+
+.app-header__nav-item.is-active {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+/* ---- 공통 하단 탭바 (js/nav.js가 주입, 모바일 전용) ---- */
 .app-tabbar {
   position: fixed;
   left: 0;
@@ -157,8 +216,6 @@ button {
   z-index: 20;
   display: flex;
   height: var(--tabbar-height);
-  max-width: var(--max-content-width);
-  margin: 0 auto;
   background-color: var(--color-bg);
   border-top: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
@@ -171,16 +228,34 @@ button {
   align-items: center;
   justify-content: center;
   gap: 2px;
-  color: var(--color-text-muted);
-  font-size: 0.6875rem;
+  color: var(--color-text-faint);
+  font-size: var(--font-size-xs);
 }
 
 .app-tabbar__item svg {
-  width: 22px;
-  height: 22px;
+  width: 21px;
+  height: 21px;
 }
 
 .app-tabbar__item.is-active {
   color: var(--color-primary);
   font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .app-header {
+    padding: 0 var(--space-6);
+  }
+
+  .app-header__nav {
+    display: flex;
+  }
+
+  .app-tabbar {
+    display: none;
+  }
+
+  .app-main {
+    padding-bottom: 0;
+  }
 }

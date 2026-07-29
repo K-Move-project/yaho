@@ -3,21 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>釜山やっほー</title>
+  <title>釜山やっほー | 日本語で巡る釜山旅行ガイド</title>
   <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/pages/home.css" />
 </head>
 <body data-page="home">
   <div id="app-header"></div>
 
   <main class="app-main">
-    <p class="placeholder-notice">ホーム画面は Phase 1 で実装予定です。</p>
+    <div id="home-root"></div>
   </main>
 
   <div id="app-tabbar"></div>
 
   <script type="module">
     import { initNav } from "/js/nav.js";
-    initNav({ title: "釜山やっほー", page: "home" });
+    import { renderHome } from "/js/pages/home.js";
+
+    initNav("home");
+    renderHome(document.getElementById("home-root"));
   </script>
 </body>
 </html>

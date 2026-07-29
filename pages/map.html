@@ -10,14 +10,16 @@
   <div id="app-header"></div>
 
   <main class="app-main">
-    <p class="placeholder-notice">地図ページは Phase 5 で実装予定です。</p>
+    <div class="app-main__inner">
+      <p class="placeholder-notice">地図ページは Phase 5 で実装予定です。</p>
+    </div>
   </main>
 
   <div id="app-tabbar"></div>
 
   <script type="module">
     import { initNav } from "/js/nav.js";
-    initNav({ title: "地図", page: "map" });
+    initNav("map");
   </script>
 </body>
 </html>
