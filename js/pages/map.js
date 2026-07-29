@@ -43,6 +43,25 @@ function numberedMarkerIcon(naver, number) {
   };
 }
 
+function clusterIcon(naver, count) {
+  const size = count < 10 ? 34 : count < 50 ? 42 : 50;
+  return {
+    content: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:#2b9bf4;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;color:#fff;font-size:${count < 100 ? 13 : 11}px;font-weight:700;">${count}</div>`,
+    size: new naver.maps.Size(size, size),
+    anchor: new naver.maps.Point(size / 2, size / 2),
+  };
+}
+
+// 스팟이 많아지면(TourAPI 수집 이후 수백 건) 마커를 전부 그리면 느려지고 도심에서
+// 심하게 겹치므로, 줌 레벨에 따라 격자로 묶어 클러스터 마커로 대신 표시한다.
+function clusterCellSize(zoom) {
+  if (zoom <= 11) return 0.12;
+  if (zoom <= 13) return 0.05;
+  if (zoom <= 15) return 0.015;
+  if (zoom <= 16) return 0.005;
+  return 0;
+}
+
 function infoWindowHtml(spot, meta) {
   return `
     <div class="map-infowindow">
@@ -135,7 +154,10 @@ export async function renderMapPage(root) {
 
   const infoWindow = new naver.maps.InfoWindow({ anchorSkew: true });
   let currentLocationMarker = null;
-  const markersBySpotId = new Map();
+  let displayedMarkers = []; // 현재 지도에 그려진 마커/클러스터 전체
+  const markersBySpotId = new Map(); // 현재 "개별 마커"로 그려진 스팟만 (클러스터로 묶인 스팟은 없음)
+  let currentFilteredSpots = [];
+  let routeActive = false;
 
   const { data: spots, error } = await fetchMappableSpots();
 
@@ -147,18 +169,6 @@ export async function renderMapPage(root) {
   const allSpots = spots ?? [];
   let activeCategory = ALL_CATEGORIES;
 
-  allSpots.forEach((spot) => {
-    const meta = CATEGORY_META[spot.category] ?? CATEGORY_META.tourist;
-    const marker = new naver.maps.Marker({
-      position: new naver.maps.LatLng(spot.lat, spot.lng),
-      map,
-      icon: markerIconHtml(meta.color),
-      title: spot.name_ja,
-    });
-    naver.maps.Event.addListener(marker, "click", () => focusSpot(spot, marker));
-    markersBySpotId.set(spot.id, marker);
-  });
-
   function focusSpot(spot, marker) {
     const meta = CATEGORY_META[spot.category] ?? CATEGORY_META.tourist;
     map.panTo(marker.getPosition());
@@ -166,6 +176,72 @@ export async function renderMapPage(root) {
     infoWindow.open(map, marker);
     collapseSheet();
   }
+
+  function renderMarkers(spotsToShow) {
+    displayedMarkers.forEach((m) => m.setMap(null));
+    displayedMarkers = [];
+    markersBySpotId.clear();
+
+    if (routeActive) return;
+
+    const cellSize = clusterCellSize(map.getZoom());
+
+    if (!cellSize) {
+      spotsToShow.forEach((spot) => {
+        const meta = CATEGORY_META[spot.category] ?? CATEGORY_META.tourist;
+        const marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(spot.lat, spot.lng),
+          map,
+          icon: markerIconHtml(meta.color),
+          title: spot.name_ja,
+        });
+        naver.maps.Event.addListener(marker, "click", () => focusSpot(spot, marker));
+        displayedMarkers.push(marker);
+        markersBySpotId.set(spot.id, marker);
+      });
+      return;
+    }
+
+    const cells = new Map();
+    spotsToShow.forEach((spot) => {
+      const key = `${Math.floor(spot.lat / cellSize)}_${Math.floor(spot.lng / cellSize)}`;
+      if (!cells.has(key)) cells.set(key, []);
+      cells.get(key).push(spot);
+    });
+
+    cells.forEach((group) => {
+      if (group.length === 1) {
+        const spot = group[0];
+        const meta = CATEGORY_META[spot.category] ?? CATEGORY_META.tourist;
+        const marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(spot.lat, spot.lng),
+          map,
+          icon: markerIconHtml(meta.color),
+          title: spot.name_ja,
+        });
+        naver.maps.Event.addListener(marker, "click", () => focusSpot(spot, marker));
+        displayedMarkers.push(marker);
+        markersBySpotId.set(spot.id, marker);
+        return;
+      }
+
+      const avgLat = group.reduce((sum, s) => sum + s.lat, 0) / group.length;
+      const avgLng = group.reduce((sum, s) => sum + s.lng, 0) / group.length;
+      const clusterMarker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(avgLat, avgLng),
+        map,
+        icon: clusterIcon(naver, group.length),
+        zIndex: 50,
+      });
+      naver.maps.Event.addListener(clusterMarker, "click", () => {
+        map.setCenter(clusterMarker.getPosition());
+        map.setZoom(Math.min(map.getZoom() + 3, 19));
+      });
+      displayedMarkers.push(clusterMarker);
+    });
+  }
+
+  naver.maps.Event.addListener(map, "idle", () => renderMarkers(currentFilteredSpots));
 
   function renderFilter() {
     const categories = [ALL_CATEGORIES, ...new Set(allSpots.map((s) => s.category).filter(Boolean))];
@@ -189,22 +265,39 @@ export async function renderMapPage(root) {
   function applyFilter() {
     const filtered =
       activeCategory === ALL_CATEGORIES ? allSpots : allSpots.filter((s) => s.category === activeCategory);
+    currentFilteredSpots = filtered;
     countEl.textContent = `${filtered.length}件のスポット`;
+    renderMarkers(filtered);
 
-    markersBySpotId.forEach((marker, id) => {
-      const visible = activeCategory === ALL_CATEGORIES || allSpots.find((s) => s.id === id)?.category === activeCategory;
-      marker.setVisible(visible);
-    });
-
-    listEl.innerHTML = filtered.length
-      ? filtered.map((spot) => listItemHtml(spot, CATEGORY_META[spot.category] ?? CATEGORY_META.tourist)).join("")
+    // 목록이 너무 길어지는 것을 막기 위해 지도 화면에는 상한을 두지 않지만,
+    // 사이드바/バ텀시트 목록은 최대 200건만 보여준다 (나머지는 지도에서 탐색).
+    const listSpots = filtered.slice(0, 200);
+    listEl.innerHTML = listSpots.length
+      ? listSpots.map((spot) => listItemHtml(spot, CATEGORY_META[spot.category] ?? CATEGORY_META.tourist)).join("")
       : `<p class="state-message">該当するスポットがありません。</p>`;
+    if (filtered.length > listSpots.length) {
+      listEl.insertAdjacentHTML(
+        "beforeend",
+        `<p class="state-message">他${filtered.length - listSpots.length}件は地図上でご確認ください。</p>`
+      );
+    }
 
     listEl.querySelectorAll("[data-spot-id]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const spot = allSpots.find((s) => s.id === btn.dataset.spotId);
+        if (!spot) return;
         const marker = markersBySpotId.get(btn.dataset.spotId);
-        if (spot && marker) focusSpot(spot, marker);
+        if (marker) {
+          focusSpot(spot, marker);
+          return;
+        }
+        // 클러스터에 묶여 있는 스팟이면, 개별 마커가 보이는 줌 레벨까지 확대한 뒤 포커스
+        map.setCenter(new naver.maps.LatLng(spot.lat, spot.lng));
+        map.setZoom(17);
+        naver.maps.Event.once(map, "idle", () => {
+          const m = markersBySpotId.get(spot.id);
+          if (m) focusSpot(spot, m);
+        });
       });
     });
   }
@@ -303,7 +396,8 @@ export async function renderMapPage(root) {
     routePolyline = null;
     routeBannerEl.hidden = true;
     routeBannerEl.innerHTML = "";
-    // ルート表示中に隠していた通常のカテゴリマーカーを、現在のフィルター状態に合わせて戻す
+    // ルート表示中は隠していた通常のマーカー/クラスターを、現在のフィルター状態に合わせて戻す
+    routeActive = false;
     applyFilter();
   }
 
@@ -316,12 +410,10 @@ export async function renderMapPage(root) {
     const steps = (course.schedule ?? []).filter((s) => s.lat != null && s.lng != null);
     if (!steps.length) return;
 
-    clearRoute();
-
-    // 番号マーカーと通常のカテゴリマーカーが同じ座標で重なって見えるため、
+    // 番号マーカーと通常のマーカー/クラスターが同じ座標で重なって見えるため、
     // ルート表示中は通常マーカーを全部隠す(スポットは左のリストで確認できる)。
-    markersBySpotId.forEach((marker) => marker.setVisible(false));
-
+    routeActive = true;
+    renderMarkers([]);
     routeMarkers = steps.map((step, i) => {
       const marker = new naver.maps.Marker({
         position: new naver.maps.LatLng(step.lat, step.lng),
@@ -368,11 +460,14 @@ export async function renderMapPage(root) {
     showCourseRoute(courseId);
   } else if (focusId) {
     const spot = allSpots.find((s) => s.id === focusId);
-    const marker = markersBySpotId.get(focusId);
-    if (spot && marker) {
-      map.setCenter(marker.getPosition());
-      map.setZoom(15);
-      naver.maps.Event.once(map, "idle", () => focusSpot(spot, marker));
+    if (spot) {
+      // クラスターに埋もれている可能性があるため、個別マーカーが出るズームまで寄せてから開く
+      map.setCenter(new naver.maps.LatLng(spot.lat, spot.lng));
+      map.setZoom(17);
+      naver.maps.Event.once(map, "idle", () => {
+        const marker = markersBySpotId.get(spot.id);
+        if (marker) focusSpot(spot, marker);
+      });
     }
   }
 }
