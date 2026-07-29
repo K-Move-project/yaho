@@ -33,6 +33,32 @@ const REQUEST_INTERVAL_MS = 150;
 // "현재 등록된 전체 데이터"를 가져온 뒤 상태(status)는 실행 시점 기준으로 계산한다.
 const EVENT_SEARCH_FROM = "20240101";
 
+// scripts/collect-spots.mjs와 동일한 부산 16개 구/군 표준 표기.
+// addr1을 정규식으로 파싱하면 일문 서비스가 가타카나 음역을 줘서 한자 표기와
+// 어긋나므로, TourAPI areaCode2로 조회한 sigungucode(언어 무관 동일 코드)로 매핑한다.
+const SIGUNGU_TO_DISTRICT_JA = {
+  1: "江西区",
+  2: "金井区",
+  3: "機張郡",
+  4: "南区",
+  5: "東区",
+  6: "東莱区",
+  7: "釜山鎮区",
+  8: "北区",
+  9: "沙上区",
+  10: "沙下区",
+  11: "西区",
+  12: "水営区",
+  13: "蓮堤区",
+  14: "影島区",
+  15: "中区",
+  16: "海雲台区",
+};
+
+function sigunguToDistrict(sigungucode) {
+  return SIGUNGU_TO_DISTRICT_JA[Number(sigungucode)] ?? null;
+}
+
 function toIsoDate(yyyymmdd) {
   if (!yyyymmdd || yyyymmdd.length !== 8) return null;
   return `${yyyymmdd.slice(0, 4)}-${yyyymmdd.slice(4, 6)}-${yyyymmdd.slice(6, 8)}`;
@@ -154,7 +180,7 @@ async function main() {
       title_ja: primary.title,
       title_sub_ko: entry.kor?.title && entry.kor.title !== primary.title ? entry.kor.title : null,
       description_ja: overview ? overview.replace(/\s+/g, " ").trim() : null,
-      area: [primary.addr1, primary.addr2].filter(Boolean).join(" ") || null,
+      area: sigunguToDistrict(primary.sigungucode),
       start_date: startDate,
       end_date: endDate,
       status: computeStatus(startDate, endDate),
