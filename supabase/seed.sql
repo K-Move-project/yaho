@@ -72,15 +72,19 @@ on conflict (id) do nothing;
 -- ---------------------------------------------------------------------------
 -- preferred_areas
 -- ---------------------------------------------------------------------------
-insert into preferred_areas (id, area_name_ja, area_name_ko, description_ja, image_url, preference_score) values
+insert into preferred_areas (id, area_name_ja, area_name_ko, description_ja, image_url, preference_score, spot_ids) values
 ('gamcheon', '甘川文化村', '감천문화마을', 'カラフルな壁画と路地が有名',
-  'https://images.unsplash.com/photo-1672671187899-a10f547341f1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600', 4.8),
+  'https://images.unsplash.com/photo-1672671187899-a10f547341f1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600', 4.8,
+  ARRAY['gamcheon', 'guesthouse1']),
 ('haeundae', '海雲台', '해운대', '韓国最大の海水浴場',
-  'https://images.unsplash.com/photo-1591520284162-8e64eceebacf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600', 4.7),
+  'https://images.unsplash.com/photo-1591520284162-8e64eceebacf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600', 4.7,
+  ARRAY['haeundae', 'hotel1']),
 ('yeongdo', '影島', '영도', '穴場の絶景スカイウォーク',
-  'https://images.unsplash.com/photo-1724618194655-c3c12254d61c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600', 4.6),
+  'https://images.unsplash.com/photo-1724618194655-c3c12254d61c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600', 4.6,
+  ARRAY['yeongdo']),
 ('gwangalli', '広安里', '광안리', '広安大橋の夜景が絶景',
-  'https://images.unsplash.com/photo-1719176373099-ef363272af49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600', 4.6)
+  'https://images.unsplash.com/photo-1719176373099-ef363272af49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600', 4.6,
+  ARRAY['gwangalli'])
 on conflict (id) do nothing;
 
 -- ---------------------------------------------------------------------------

@@ -1,0 +1,69 @@
+/* 地域(人気エリア)詳細 (pages/area-detail.html) — Figma 시안에 없어 spot-detail 톤앤매너로 신규 설계 */
+
+.area-detail {
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-6);
+}
+
+.area-detail__hero {
+  height: 200px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.area-detail__hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.area-detail__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.area-detail__name {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.area-detail__name-ko {
+  margin: 2px 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-faint);
+}
+
+.area-detail__score {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.area-detail__score svg {
+  width: 16px;
+  height: 16px;
+  color: #fbbf24;
+}
+
+.area-detail__description {
+  margin-top: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+}
+
+.area-detail__section-title {
+  margin: var(--space-5) 0 var(--space-3);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text);
+}

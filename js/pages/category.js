@@ -1,20 +1,13 @@
 import { supabase } from "../supabaseClient.js";
 import { fetchSpotsByCategory } from "../api/spots.js";
+import { CATEGORY_META } from "../constants/categories.js";
+import { spotCardHtml } from "../components/spot-card.js";
 
 const ICONS = {
   back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
   search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
   grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>',
   list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
-  mapPin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-7.1-7-12a7 7 0 0 1 14 0c0 4.9-7 12-7 12Z"/><circle cx="12" cy="9" r="2.4"/></svg>',
-  star: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.5 15 9l7 .9-5.1 4.7L18.2 21 12 17.3 5.8 21l1.3-6.4L2 9.9 9 9z"/></svg>',
-};
-
-const CATEGORY_META = {
-  tourist: { label: "観光地", labelKo: "관광지", color: "#2b9bf4", bg: "#ebf5ff" },
-  food: { label: "グルメ", labelKo: "맛집", color: "#f47c2b", bg: "#fff3e8" },
-  stay: { label: "宿泊", labelKo: "숙박", color: "#2bbf8a", bg: "#e8fbf4" },
-  experience: { label: "体験", labelKo: "체험", color: "#a02bf4", bg: "#f4ebff" },
 };
 
 const ALL_AREAS = "すべて";
@@ -54,33 +47,6 @@ function skeletonCards(count) {
       `
     )
     .join("");
-}
-
-function spotCard(spot, meta, viewMode) {
-  const tags = spot.tags ?? [];
-  const shownTags = viewMode === "grid" ? tags.slice(0, 2) : tags.slice(0, 3);
-  const tagHtml = shownTags
-    .map((tag) => `<span class="category-card__tag" style="background:${meta.bg};color:${meta.color}">${tag}</span>`)
-    .join("");
-  const priceHtml = spot.admission ? `<span class="category-card__price">${spot.admission}</span>` : "";
-  const ratingHtml =
-    spot.rating != null
-      ? `<span class="category-card__rating">${ICONS.star}<span>${spot.rating}</span></span>`
-      : "";
-
-  return `
-    <a class="category-card category-card--${viewMode}" href="/pages/spot-detail.html?id=${encodeURIComponent(spot.id)}">
-      <div class="category-card__image">
-        <img src="${spot.image_url ?? ""}" alt="${spot.name_ja}" loading="lazy" />
-      </div>
-      <div class="category-card__body">
-        <p class="category-card__name">${spot.name_ja}</p>
-        <div class="category-card__area">${ICONS.mapPin}<span>${spot.area ?? ""}</span></div>
-        <div class="category-card__tags">${tagHtml}</div>
-        <div class="category-card__foot">${ratingHtml}${priceHtml}</div>
-      </div>
-    </a>
-  `;
 }
 
 export async function renderCategoryPage(root) {
@@ -169,7 +135,7 @@ export async function renderCategoryPage(root) {
     countEl.textContent = `${filtered.length}件のスポット`;
     resultsEl.className = `category-results category-results--${state.viewMode}`;
     resultsEl.innerHTML = filtered.length
-      ? filtered.map((spot) => spotCard(spot, meta, state.viewMode)).join("")
+      ? filtered.map((spot) => spotCardHtml(spot, state.viewMode)).join("")
       : `<p class="state-message">条件に一致するスポットが見つかりませんでした。</p>`;
   }
 

@@ -1,5 +1,6 @@
 import { supabase } from "../supabaseClient.js";
 import { fetchSpotById } from "../api/spots.js";
+import { categoryMeta } from "../constants/categories.js";
 
 const ICONS = {
   back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
@@ -8,13 +9,6 @@ const ICONS = {
   clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>',
   navigation: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 21 3 13 21 11 13 3 11"/></svg>',
   ticket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.5a1.5 1.5 0 0 0 0 3V15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.5a1.5 1.5 0 0 0 0-3Z"/></svg>',
-};
-
-const CATEGORY_META = {
-  tourist: { label: "観光地", color: "#2b9bf4" },
-  food: { label: "グルメ", color: "#f47c2b" },
-  stay: { label: "宿泊", color: "#2bbf8a" },
-  experience: { label: "体験", color: "#a02bf4" },
 };
 
 function goBack() {
@@ -89,7 +83,7 @@ export async function renderSpotDetailPage(root) {
   }
 
   document.title = `${spot.name_ja} | 釜山やっほー`;
-  const meta = CATEGORY_META[spot.category] ?? CATEGORY_META.tourist;
+  const meta = categoryMeta(spot.category);
   const tags = spot.tags ?? [];
 
   root.innerHTML = `
