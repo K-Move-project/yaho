@@ -1,8 +1,11 @@
 import { supabase } from "../supabaseClient.js";
 import { fetchAreaById } from "../api/areas.js";
-import { fetchSpotsByIds } from "../api/spots.js";
+import { fetchMappableSpots } from "../api/spots.js";
 import { CATEGORY_META } from "../constants/categories.js";
 import { spotCardHtml } from "../components/spot-card.js";
+import { distanceKm } from "../utils/geo.js";
+
+const NEARBY_RADIUS_KM = 2;
 
 const ICONS = {
   back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
@@ -83,7 +86,16 @@ export async function renderAreaDetailPage(root) {
 
   document.title = `${area.area_name_ja} | 釜山やっほー`;
 
-  const { data: spots, error: spotsError } = await fetchSpotsByIds(area.spot_ids ?? []);
+  let spots = [];
+  let spotsError = null;
+  if (area.lat != null && area.lng != null) {
+    const result = await fetchMappableSpots();
+    spotsError = result.error;
+    spots = (result.data ?? [])
+      .map((spot) => ({ ...spot, distanceKm: distanceKm(area.lat, area.lng, spot.lat, spot.lng) }))
+      .filter((spot) => spot.distanceKm <= NEARBY_RADIUS_KM)
+      .sort((a, b) => a.distanceKm - b.distanceKm);
+  }
 
   root.innerHTML = `
     ${topbarTemplate(area.area_name_ja)}
@@ -106,7 +118,7 @@ export async function renderAreaDetailPage(root) {
 
       ${area.description_ja ? `<p class="area-detail__description">${area.description_ja}</p>` : ""}
 
-      <h2 class="area-detail__section-title">エリア内のスポット</h2>
+      <h2 class="area-detail__section-title">周辺のスポット</h2>
       <div class="category-area-filter" data-category-filter></div>
       <p class="category-count" data-count></p>
       <div class="category-results category-results--grid" data-results></div>

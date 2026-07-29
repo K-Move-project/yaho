@@ -23,9 +23,3 @@ export async function fetchSpotById(id) {
 export async function fetchMappableSpots() {
   return supabase.from("spots").select("*").not("lat", "is", null).not("lng", "is", null);
 }
-
-/** @param {string[]} ids */
-export async function fetchSpotsByIds(ids) {
-  if (!ids?.length) return { data: [], error: null };
-  return supabase.from("spots").select("*").in("id", ids);
-}
