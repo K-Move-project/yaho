@@ -13,7 +13,7 @@ function goBack() {
   if (window.history.length > 1) {
     window.history.back();
   } else {
-    window.location.href = "/pages/courses.html";
+    window.location.href = "courses.html";
   }
 }
 
@@ -133,7 +133,7 @@ export async function renderCourseDetailPage(root) {
           : ""
       }
 
-      <a class="course-detail__map-cta" href="/pages/map.html?course=${encodeURIComponent(course.id)}">
+      <a class="course-detail__map-cta" href="map.html?course=${encodeURIComponent(course.id)}">
         ${ICONS.navigation}<span>地図でルートを見る</span>
       </a>
     </div>

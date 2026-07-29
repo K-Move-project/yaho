@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>コース詳細 | 釜山やっほー</title>
-  <link rel="stylesheet" href="/css/common.css" />
-  <link rel="stylesheet" href="/css/pages/course-detail.css" />
+  <link rel="stylesheet" href="../css/common.css" />
+  <link rel="stylesheet" href="../css/pages/course-detail.css" />
 </head>
 <body data-page="course-detail">
   <div id="app-header"></div>
@@ -17,8 +17,8 @@
   <div id="app-tabbar"></div>
 
   <script type="module">
-    import { initNav } from "/js/nav.js";
-    import { renderCourseDetailPage } from "/js/pages/course-detail.js";
+    import { initNav } from "../js/nav.js";
+    import { renderCourseDetailPage } from "../js/pages/course-detail.js";
 
     initNav(null);
     renderCourseDetailPage(document.getElementById("course-detail-root"));

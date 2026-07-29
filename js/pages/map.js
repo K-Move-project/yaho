@@ -68,14 +68,14 @@ function infoWindowHtml(spot, meta) {
       <span class="map-infowindow__badge" style="background:${meta.bg};color:${meta.color}">${meta.label}</span>
       <p class="map-infowindow__name">${spot.name_ja}</p>
       <p class="map-infowindow__area">${spot.area ?? ""}</p>
-      <a class="map-infowindow__link" href="/pages/spot-detail.html?id=${encodeURIComponent(spot.id)}">詳細を見る →</a>
+      <a class="map-infowindow__link" href="spot-detail.html?id=${encodeURIComponent(spot.id)}">詳細を見る →</a>
     </div>
   `;
 }
 
 function routeStepInfoWindowHtml(step) {
   const link = step.spot_id
-    ? `<a class="map-infowindow__link" href="/pages/spot-detail.html?id=${encodeURIComponent(step.spot_id)}">詳細を見る →</a>`
+    ? `<a class="map-infowindow__link" href="spot-detail.html?id=${encodeURIComponent(step.spot_id)}">詳細を見る →</a>`
     : "";
   return `
     <div class="map-infowindow">

@@ -32,7 +32,7 @@ export function spotCardHtml(spot, viewMode = "grid") {
       : "";
 
   return `
-    <a class="category-card category-card--${viewMode}" href="/pages/spot-detail.html?id=${encodeURIComponent(spot.id)}">
+    <a class="category-card category-card--${viewMode}" href="spot-detail.html?id=${encodeURIComponent(spot.id)}">
       <div class="category-card__image">
         ${imageHtml}
       </div>

@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>カテゴリー | 釜山やっほー</title>
-  <link rel="stylesheet" href="/css/common.css" />
-  <link rel="stylesheet" href="/css/pages/category.css" />
+  <link rel="stylesheet" href="../css/common.css" />
+  <link rel="stylesheet" href="../css/pages/category.css" />
 </head>
 <body data-page="category">
   <div id="app-header"></div>
@@ -17,8 +17,8 @@
   <div id="app-tabbar"></div>
 
   <script type="module">
-    import { initNav } from "/js/nav.js";
-    import { renderCategoryPage } from "/js/pages/category.js";
+    import { initNav } from "../js/nav.js";
+    import { renderCategoryPage } from "../js/pages/category.js";
 
     initNav(null);
     renderCategoryPage(document.getElementById("category-root"));

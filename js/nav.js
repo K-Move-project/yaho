@@ -16,11 +16,21 @@ const ICONS = {
   courses: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 21 3 13 21 11 13 3 11"/></svg>',
 };
 
+// nav.jsはindex.html(ルート)とpages/*.html(1階層下)の両方から読み込まれる
+// 唯一の共有モジュールなので、絶対パスではなく実行中のパスから相対パスを組み立てる。
+const IS_NESTED = window.location.pathname.includes("/pages/");
+
+function resolveHref(rootAbsoluteHref) {
+  if (rootAbsoluteHref === "/index.html") return IS_NESTED ? "../index.html" : "index.html";
+  const rest = rootAbsoluteHref.replace(/^\/pages\//, "");
+  return IS_NESTED ? rest : `pages/${rest}`;
+}
+
 const TABS = [
-  { key: "home", label: "ホーム", href: "/index.html", icon: ICONS.home },
-  { key: "map", label: "地図", href: "/pages/map.html", icon: ICONS.map },
-  { key: "events", label: "行事・お祭り", href: "/pages/events.html", icon: ICONS.events },
-  { key: "courses", label: "おすすめコース", href: "/pages/courses.html", icon: ICONS.courses },
+  { key: "home", label: "ホーム", href: resolveHref("/index.html"), icon: ICONS.home },
+  { key: "map", label: "地図", href: resolveHref("/pages/map.html"), icon: ICONS.map },
+  { key: "events", label: "行事・お祭り", href: resolveHref("/pages/events.html"), icon: ICONS.events },
+  { key: "courses", label: "おすすめコース", href: resolveHref("/pages/courses.html"), icon: ICONS.courses },
 ];
 
 function renderHeader(activePage) {
@@ -36,7 +46,7 @@ function renderHeader(activePage) {
 
   return `
     <header class="app-header">
-      <a class="app-header__brand" href="/index.html">
+      <a class="app-header__brand" href="${resolveHref("/index.html")}">
         <span class="app-header__logo">${ICONS.logo}</span>
         <span>
           <span class="app-header__title">釜山 야-호-</span><br />

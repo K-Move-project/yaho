@@ -13,7 +13,7 @@ function goBack() {
   if (window.history.length > 1) {
     window.history.back();
   } else {
-    window.location.href = "/pages/events.html";
+    window.location.href = "events.html";
   }
 }
 
@@ -130,7 +130,7 @@ export async function renderEventDetailPage(root) {
         relatedSpot
           ? `
         <h2 class="event-detail__section-title">関連スポット</h2>
-        <a class="event-detail__related-spot" href="/pages/spot-detail.html?id=${encodeURIComponent(relatedSpot.id)}">
+        <a class="event-detail__related-spot" href="spot-detail.html?id=${encodeURIComponent(relatedSpot.id)}">
           <img src="${relatedSpot.image_url ?? ""}" alt="${relatedSpot.name_ja}" loading="lazy" onerror="this.style.display='none'" />
           <div>
             <p class="event-detail__related-spot-name">${relatedSpot.name_ja}</p>

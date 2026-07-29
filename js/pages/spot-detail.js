@@ -15,7 +15,7 @@ function goBack() {
   if (window.history.length > 1) {
     window.history.back();
   } else {
-    window.location.href = "/index.html";
+    window.location.href = "../index.html";
   }
 }
 
@@ -120,7 +120,7 @@ export async function renderSpotDetailPage(root) {
         ${infoRow(ICONS.ticket, "入場料", spot.admission, meta.color)}
       </div>
 
-      <a class="spot-detail__map-cta" href="/pages/map.html?spot=${encodeURIComponent(spot.id)}" style="background:linear-gradient(135deg, ${meta.color} 0%, ${meta.color}cc 100%)">
+      <a class="spot-detail__map-cta" href="map.html?spot=${encodeURIComponent(spot.id)}" style="background:linear-gradient(135deg, ${meta.color} 0%, ${meta.color}cc 100%)">
         ${ICONS.navigation}<span>地図で確認する</span>
       </a>
     </div>

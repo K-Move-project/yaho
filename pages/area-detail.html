@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>地域詳細 | 釜山やっほー</title>
-  <link rel="stylesheet" href="/css/common.css" />
-  <link rel="stylesheet" href="/css/pages/category.css" />
-  <link rel="stylesheet" href="/css/pages/area-detail.css" />
+  <link rel="stylesheet" href="../css/common.css" />
+  <link rel="stylesheet" href="../css/pages/category.css" />
+  <link rel="stylesheet" href="../css/pages/area-detail.css" />
 </head>
 <body data-page="area-detail">
   <div id="app-header"></div>
@@ -18,8 +18,8 @@
   <div id="app-tabbar"></div>
 
   <script type="module">
-    import { initNav } from "/js/nav.js";
-    import { renderAreaDetailPage } from "/js/pages/area-detail.js";
+    import { initNav } from "../js/nav.js";
+    import { renderAreaDetailPage } from "../js/pages/area-detail.js";
 
     initNav(null);
     renderAreaDetailPage(document.getElementById("area-detail-root"));

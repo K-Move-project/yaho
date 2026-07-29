@@ -135,7 +135,7 @@ function heroSection() {
             <span>現在地周辺を探す</span>
           </button>
         </div>
-        <a class="home-hero__map-card" href="/pages/map.html">
+        <a class="home-hero__map-card" href="pages/map.html">
           <div class="home-hero__map-preview">
             <span class="home-hero__map-pin">${ICONS.mapPin}</span>
             <p>地図で探す</p>
@@ -152,7 +152,7 @@ function heroSection() {
 function categoriesSection() {
   const items = CATEGORIES.map(
     (cat) => `
-      <a class="home-category" href="/pages/category.html?id=${cat.id}">
+      <a class="home-category" href="pages/category.html?id=${cat.id}">
         <span class="home-category__icon" style="background:${cat.bg};color:${cat.color}">${cat.icon}</span>
         <span class="home-category__label">${cat.label}</span>
       </a>
@@ -169,7 +169,7 @@ function categoriesSection() {
 function areasSection() {
   const cards = POPULAR_AREAS.map(
     (area) => `
-      <a class="home-area-card" href="/pages/area-detail.html?id=${area.id}">
+      <a class="home-area-card" href="pages/area-detail.html?id=${area.id}">
         <div class="home-area-card__image">
           <img src="${area.image}" alt="${area.name}" loading="lazy" />
           <span class="home-area-card__tag">${area.tag}</span>
@@ -196,7 +196,7 @@ function areasSection() {
 function eventCard(event) {
   const isOngoing = event.status === "開催中";
   return `
-    <a class="home-list-card" href="/pages/event-detail.html?id=${event.id}">
+    <a class="home-list-card" href="pages/event-detail.html?id=${event.id}">
       <div class="home-list-card__image">
         <img src="${event.image}" alt="${event.title}" loading="lazy" />
       </div>
@@ -214,7 +214,7 @@ function eventCard(event) {
 
 function courseCard(course) {
   return `
-    <a class="home-list-card" href="/pages/course-detail.html?id=${course.id}">
+    <a class="home-list-card" href="pages/course-detail.html?id=${course.id}">
       <div class="home-list-card__image">
         <img src="${course.image}" alt="${course.title}" loading="lazy" />
       </div>
@@ -237,14 +237,14 @@ function eventsAndCoursesSection() {
       <div>
         <div class="home-section__head">
           <h2>${ICONS.calendar}<span>開催中の行事・お祭り</span></h2>
-          <a class="home-section__more" href="/pages/events.html">もっと見る${ICONS.chevronRight}</a>
+          <a class="home-section__more" href="pages/events.html">もっと見る${ICONS.chevronRight}</a>
         </div>
         <div class="home-list">${EVENTS.map(eventCard).join("")}</div>
       </div>
       <div>
         <div class="home-section__head">
           <h2>${ICONS.navigation}<span>おすすめコース</span></h2>
-          <a class="home-section__more" href="/pages/courses.html">もっと見る${ICONS.chevronRight}</a>
+          <a class="home-section__more" href="pages/courses.html">もっと見る${ICONS.chevronRight}</a>
         </div>
         <div class="home-list">${COURSES.map(courseCard).join("")}</div>
       </div>
@@ -265,7 +265,7 @@ export function renderHome(root) {
     e.preventDefault();
     const keyword = new FormData(searchForm).get("keyword")?.toString().trim();
     if (keyword) {
-      window.location.href = `/pages/category.html?keyword=${encodeURIComponent(keyword)}`;
+      window.location.href = `pages/category.html?keyword=${encodeURIComponent(keyword)}`;
     }
   });
 }

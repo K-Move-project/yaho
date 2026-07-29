@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>イベント詳細 | 釜山やっほー</title>
-  <link rel="stylesheet" href="/css/common.css" />
-  <link rel="stylesheet" href="/css/pages/event-detail.css" />
+  <link rel="stylesheet" href="../css/common.css" />
+  <link rel="stylesheet" href="../css/pages/event-detail.css" />
 </head>
 <body data-page="event-detail">
   <div id="app-header"></div>
@@ -17,8 +17,8 @@
   <div id="app-tabbar"></div>
 
   <script type="module">
-    import { initNav } from "/js/nav.js";
-    import { renderEventDetailPage } from "/js/pages/event-detail.js";
+    import { initNav } from "../js/nav.js";
+    import { renderEventDetailPage } from "../js/pages/event-detail.js";
 
     initNav(null);
     renderEventDetailPage(document.getElementById("event-detail-root"));

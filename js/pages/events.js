@@ -24,7 +24,7 @@ function eventCardHtml(festival) {
   const meta = FESTIVAL_STATUS_META[status];
   const pulseDot = status === "ongoing" ? `<span class="event-card__badge-dot"></span>` : "";
   return `
-    <a class="event-card" href="/pages/event-detail.html?id=${encodeURIComponent(festival.id)}">
+    <a class="event-card" href="event-detail.html?id=${encodeURIComponent(festival.id)}">
       <div class="event-card__image">
         <img src="${festival.image_url ?? ""}" alt="${festival.title_ja}" loading="lazy" onerror="this.style.display='none'" />
       </div>

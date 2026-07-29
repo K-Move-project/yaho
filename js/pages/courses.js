@@ -58,7 +58,7 @@ function courseCardHtml(course) {
     : "";
 
   return `
-    <a class="course-card" href="/pages/course-detail.html?id=${encodeURIComponent(course.id)}">
+    <a class="course-card" href="course-detail.html?id=${encodeURIComponent(course.id)}">
       <div class="course-card__image">
         ${imageHtml}
         ${ratingHtml}
