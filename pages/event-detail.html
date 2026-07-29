@@ -5,21 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>イベント詳細 | 釜山やっほー</title>
   <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/pages/event-detail.css" />
 </head>
 <body data-page="event-detail">
   <div id="app-header"></div>
 
   <main class="app-main">
-    <div class="app-main__inner">
-      <p class="placeholder-notice">イベント詳細ページは Phase 6 で実装予定です。</p>
-    </div>
+    <div id="event-detail-root"></div>
   </main>
 
   <div id="app-tabbar"></div>
 
   <script type="module">
     import { initNav } from "/js/nav.js";
+    import { renderEventDetailPage } from "/js/pages/event-detail.js";
+
     initNav(null);
+    renderEventDetailPage(document.getElementById("event-detail-root"));
   </script>
 </body>
 </html>
