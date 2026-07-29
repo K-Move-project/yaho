@@ -1,6 +1,7 @@
 import { supabase } from "../supabaseClient.js";
 import { CONFIG } from "../config.js";
 import { fetchMappableSpots } from "../api/spots.js";
+import { fetchCourseById } from "../api/courses.js";
 import { CATEGORY_META } from "../constants/categories.js";
 
 const ICONS = {
@@ -31,6 +32,14 @@ function markerIconHtml(color) {
     content: `<div style="width:22px;height:22px;border-radius:50% 50% 50% 0;background:${color};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);transform:rotate(-45deg);"></div>`,
     size: new window.naver.maps.Size(22, 22),
     anchor: new window.naver.maps.Point(11, 22),
+  };
+}
+
+function numberedMarkerIcon(naver, number) {
+  return {
+    content: `<div style="width:26px;height:26px;border-radius:50%;background:#2b9bf4;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;">${number}</div>`,
+    size: new naver.maps.Size(26, 26),
+    anchor: new naver.maps.Point(13, 13),
   };
 }
 
@@ -67,6 +76,7 @@ export async function renderMapPage(root) {
     <div class="map-page">
       <div class="map-panel" data-panel>
         <button type="button" class="map-panel__handle" data-sheet-handle aria-label="リストの表示切り替え"></button>
+        <div class="map-route-banner" data-route-banner hidden></div>
         <div class="category-area-filter map-panel__filter" data-filter></div>
         <p class="category-count" data-count></p>
         <div class="map-panel__list" data-list></div>
@@ -267,10 +277,72 @@ export async function renderMapPage(root) {
   handle.addEventListener("pointerup", endDrag);
   handle.addEventListener("pointercancel", endDrag);
 
-  // ---- spot-detail의 "地図で確認する"에서 넘어온 경우 ----
+  // ---- コースの動線表示 ----
+  let routeMarkers = [];
+  let routePolyline = null;
+  const routeBannerEl = root.querySelector("[data-route-banner]");
+
+  function clearRoute() {
+    routeMarkers.forEach((m) => m.setMap(null));
+    routeMarkers = [];
+    routePolyline?.setMap(null);
+    routePolyline = null;
+    routeBannerEl.hidden = true;
+    routeBannerEl.innerHTML = "";
+  }
+
+  async function showCourseRoute(courseId) {
+    const { data: course } = await fetchCourseById(courseId);
+    if (!course) return;
+
+    const orderedSpots = (course.spot_ids ?? [])
+      .map((id) => allSpots.find((s) => s.id === id))
+      .filter(Boolean);
+    if (!orderedSpots.length) return;
+
+    clearRoute();
+
+    routeMarkers = orderedSpots.map(
+      (spot, i) =>
+        new naver.maps.Marker({
+          position: new naver.maps.LatLng(spot.lat, spot.lng),
+          map,
+          icon: numberedMarkerIcon(naver, i + 1),
+          zIndex: 200,
+        })
+    );
+
+    const path = orderedSpots.map((spot) => new naver.maps.LatLng(spot.lat, spot.lng));
+    routePolyline = new naver.maps.Polyline({
+      map,
+      path,
+      strokeColor: "#2b9bf4",
+      strokeWeight: 4,
+      strokeStyle: "shortdash",
+      strokeLineCap: "round",
+    });
+
+    const bounds = new naver.maps.LatLngBounds(path[0], path[0]);
+    path.forEach((p) => bounds.extend(p));
+    map.fitBounds(bounds, { top: 60, right: 60, bottom: 60, left: 60 });
+
+    routeBannerEl.hidden = false;
+    routeBannerEl.innerHTML = `
+      <span>${course.title_ja} のルート（${orderedSpots.length}カ所）</span>
+      <button type="button" data-clear-route aria-label="ルート表示を閉じる">×</button>
+    `;
+    routeBannerEl.querySelector("[data-clear-route]").addEventListener("click", clearRoute);
+    expandSheet();
+  }
+
+  // ---- spot-detail/course-detail에서 넘어온 경우 ----
   const params = new URLSearchParams(window.location.search);
+  const courseId = params.get("course");
   const focusId = params.get("spot");
-  if (focusId) {
+
+  if (courseId) {
+    showCourseRoute(courseId);
+  } else if (focusId) {
     const spot = allSpots.find((s) => s.id === focusId);
     const marker = markersBySpotId.get(focusId);
     if (spot && marker) {

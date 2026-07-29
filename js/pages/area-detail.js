@@ -1,5 +1,6 @@
 import { supabase } from "../supabaseClient.js";
-import { fetchAreaById, fetchSpotsByIds } from "../api/areas.js";
+import { fetchAreaById } from "../api/areas.js";
+import { fetchSpotsByIds } from "../api/spots.js";
 import { CATEGORY_META } from "../constants/categories.js";
 import { spotCardHtml } from "../components/spot-card.js";
 

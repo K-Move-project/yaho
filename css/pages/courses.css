@@ -1,0 +1,81 @@
+/* おすすめコース (pages/courses.html) — Figma CoursesPage.tsx 참고 */
+
+.courses-page {
+  padding-top: var(--space-4);
+}
+
+.courses-page__title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.courses-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.course-card {
+  display: block;
+  background-color: #ffffff;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  color: inherit;
+}
+
+.course-card--skeleton {
+  box-shadow: none;
+}
+
+.course-card__image {
+  height: 120px;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-3);
+}
+
+.course-card__image span {
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-full);
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.course-card__body {
+  padding: var(--space-3) var(--space-4);
+}
+
+.course-card__title {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.course-card__subtitle {
+  margin: 2px 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.course-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.course-card__pill {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 600;
+}
