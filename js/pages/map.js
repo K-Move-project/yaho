@@ -289,6 +289,8 @@ export async function renderMapPage(root) {
     routePolyline = null;
     routeBannerEl.hidden = true;
     routeBannerEl.innerHTML = "";
+    // ルート表示中に隠していた通常のカテゴリマーカーを、現在のフィルター状態に合わせて戻す
+    applyFilter();
   }
 
   async function showCourseRoute(courseId) {
@@ -301,6 +303,10 @@ export async function renderMapPage(root) {
     if (!orderedSpots.length) return;
 
     clearRoute();
+
+    // 番号マーカーと通常のカテゴリマーカーが同じ座標で重なって見えるため、
+    // ルート表示中は通常マーカーを全部隠す(スポットは左のリストで確認できる)。
+    markersBySpotId.forEach((marker) => marker.setVisible(false));
 
     routeMarkers = orderedSpots.map(
       (spot, i) =>
