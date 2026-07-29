@@ -5,21 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>カテゴリー | 釜山やっほー</title>
   <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/pages/category.css" />
 </head>
 <body data-page="category">
   <div id="app-header"></div>
 
   <main class="app-main">
-    <div class="app-main__inner">
-      <p class="placeholder-notice">カテゴリー別スポット一覧は Phase 3 で実装予定です。</p>
-    </div>
+    <div id="category-root"></div>
   </main>
 
   <div id="app-tabbar"></div>
 
   <script type="module">
     import { initNav } from "/js/nav.js";
+    import { renderCategoryPage } from "/js/pages/category.js";
+
     initNav(null);
+    renderCategoryPage(document.getElementById("category-root"));
   </script>
 </body>
 </html>

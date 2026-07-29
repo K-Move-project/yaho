@@ -7,7 +7,7 @@
  * Phase 2에서 실제 Supabase 프로젝트 URL/anon key로 채운다.
  */
 export const CONFIG = {
-  SUPABASE_URL: "",
-  SUPABASE_ANON_KEY: "",
+  SUPABASE_URL: "https://jryzwztppwbixqohitvg.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_t7UiFnWifLq5g0FZgEJXWA_PD5oiwBn",
   NAVER_MAP_CLIENT_ID: "",
 };

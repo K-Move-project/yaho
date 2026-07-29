@@ -1,0 +1,202 @@
+/* カテゴリー一覧 (pages/category.html) — Figma CategoryPage.tsx 참고 */
+
+.category-page {
+  padding-top: var(--space-4);
+}
+
+.category-search {
+  position: relative;
+  margin-bottom: var(--space-3);
+}
+
+.category-search__icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-faint);
+  display: flex;
+}
+
+.category-search__icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.category-search__input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3) var(--space-2) 36px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  outline: none;
+}
+
+.category-area-filter {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+  margin-bottom: var(--space-3);
+  scrollbar-width: none;
+}
+
+.category-area-filter::-webkit-scrollbar {
+  display: none;
+}
+
+.category-chip {
+  flex-shrink: 0;
+  padding: 6px var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.category-count {
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* ---- 결과 카드: grid / list 공통 ---- */
+.category-results--grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.category-results--list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .category-results--grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .category-results--grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.category-card {
+  display: block;
+  background-color: #ffffff;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  color: inherit;
+}
+
+.category-card--skeleton {
+  box-shadow: none;
+}
+
+.category-card--grid .category-card__image {
+  height: 144px;
+}
+
+.category-card--grid .category-card__body {
+  padding: var(--space-3);
+}
+
+.category-card--list {
+  display: flex;
+}
+
+.category-card--list .category-card__image {
+  width: 112px;
+  height: 112px;
+  flex-shrink: 0;
+}
+
+.category-card--list .category-card__body {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-4);
+}
+
+.category-card__image {
+  overflow: hidden;
+}
+
+.category-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.category-card__name {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category-card__area {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  margin-bottom: var(--space-2);
+  color: var(--color-text-faint);
+  font-size: 0.6875rem;
+}
+
+.category-card__area svg {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+}
+
+.category-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: var(--space-2);
+}
+
+.category-card__tag {
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.625rem;
+}
+
+.category-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.category-card__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.category-card__rating svg {
+  width: 11px;
+  height: 11px;
+  color: #fbbf24;
+}
+
+.category-card__price {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+}

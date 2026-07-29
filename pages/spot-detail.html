@@ -5,21 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>スポット詳細 | 釜山やっほー</title>
   <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/pages/spot-detail.css" />
 </head>
 <body data-page="spot-detail">
   <div id="app-header"></div>
 
   <main class="app-main">
-    <div class="app-main__inner">
-      <p class="placeholder-notice">スポット詳細ページは Phase 3 で実装予定です。</p>
-    </div>
+    <div id="spot-detail-root"></div>
   </main>
 
   <div id="app-tabbar"></div>
 
   <script type="module">
     import { initNav } from "/js/nav.js";
+    import { renderSpotDetailPage } from "/js/pages/spot-detail.js";
+
     initNav(null);
+    renderSpotDetailPage(document.getElementById("spot-detail-root"));
   </script>
 </body>
 </html>

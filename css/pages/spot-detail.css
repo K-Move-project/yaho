@@ -1,0 +1,146 @@
+/* スポット詳細 (pages/spot-detail.html) — Figma SpotDetailPage.tsx 참고 */
+
+.spot-detail {
+  padding-top: var(--space-4);
+}
+
+.spot-detail__hero {
+  height: 240px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.spot-detail__hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.spot-detail__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.spot-detail__name {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.spot-detail__name-ko {
+  margin: 2px 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-faint);
+}
+
+.spot-detail__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.spot-detail__rating svg {
+  width: 16px;
+  height: 16px;
+  color: #fbbf24;
+}
+
+.spot-detail__area {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-2);
+  color: var(--color-text-faint);
+  font-size: var(--font-size-sm);
+}
+
+.spot-detail__area svg {
+  width: 14px;
+  height: 14px;
+}
+
+.spot-detail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.spot-detail__category-badge,
+.spot-detail__tag {
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.spot-detail__description {
+  margin-top: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+}
+
+.spot-detail__info-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.spot-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background-color: #ffffff;
+  border-radius: var(--radius-sm);
+}
+
+.spot-info-row__icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.spot-info-row__icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.spot-info-row__label {
+  margin: 0;
+  color: var(--color-text-faint);
+  font-size: 0.6875rem;
+}
+
+.spot-info-row__value {
+  margin: 2px 0 0;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+.spot-detail__map-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin: var(--space-5) 0 var(--space-6);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  color: #ffffff;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.spot-detail__map-cta svg {
+  width: 16px;
+  height: 16px;
+}

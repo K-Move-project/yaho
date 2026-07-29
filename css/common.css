@@ -126,6 +126,112 @@ button {
   font-size: var(--font-size-sm);
 }
 
+/* ---- 페이지 로컬 상단바 (뒤로가기+제목) ----
+   전역 브랜드 헤더(.app-header)와 별개로, 상세/목록 페이지가 각자 렌더링하는
+   보조 헤더. Figma App.tsx 구조상 뒤로가기는 각 페이지가 자체 구현한다. */
+.page-topbar {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.page-topbar__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+.page-topbar__back svg {
+  width: 18px;
+  height: 18px;
+}
+
+.page-topbar__title {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page-topbar__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-faint);
+}
+
+.page-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.page-topbar__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text-muted);
+}
+
+.page-topbar__action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---- 로딩 스켈레톤 / 에러 상태 (공통) ---- */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.skeleton {
+  background-color: var(--color-border);
+  border-radius: var(--radius-sm);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.state-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.state-message__retry {
+  padding: var(--space-2) var(--space-5);
+  border: none;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: #ffffff;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
 /* ---- 공통 헤더 (js/nav.js가 주입) ---- */
 .app-header {
   position: sticky;
