@@ -1,0 +1,236 @@
+/* 地図 (pages/map.html) — Figma 시안의 %좌표 가짜 핀은 참고하지 않고,
+   spots.lat/lng 기반 네이버 지도로 신규 구현. Figma 시안에 없어
+   デスクトップ(사이드바+지도)/모바일(바텀시트) 레이아웃을 직접 설계. */
+
+body[data-page="map"] {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body[data-page="map"] .app-main {
+  padding: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#map-root {
+  height: 100%;
+}
+
+.map-page {
+  display: flex;
+  height: 100%;
+  position: relative;
+}
+
+.map-canvas-wrap {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+}
+
+.map-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.map-locate-btn {
+  position: absolute;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-full);
+  background-color: #ffffff;
+  color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.map-locate-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---- パネル: デスクトップ=サイドバー / モバイル=ボトムシート ---- */
+.map-panel {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+}
+
+.map-panel__handle {
+  display: none;
+}
+
+.map-panel__filter {
+  padding: var(--space-3) var(--space-4) 0;
+  margin-bottom: 0;
+}
+
+.category-count {
+  padding: 0 var(--space-4);
+}
+
+.map-panel__list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+.map-list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border: none;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  text-align: left;
+}
+
+.map-list-item__thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.map-list-item__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.map-list-item__name {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-list-item__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 4px;
+  font-size: 0.6875rem;
+  color: var(--color-text-faint);
+}
+
+.map-list-item__badge {
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+
+.map-list-item__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.map-list-item__rating svg {
+  color: #fbbf24;
+}
+
+/* ---- デスクトップ: サイドバー ---- */
+@media (min-width: 768px) {
+  .map-panel {
+    position: static;
+    width: 320px;
+    flex-shrink: 0;
+    height: 100%;
+    border-right: 1px solid var(--color-border);
+    transform: none !important;
+  }
+}
+
+/* ---- モバイル: ボトムシート ---- */
+@media (max-width: 767px) {
+  .map-panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--tabbar-height);
+    z-index: 15;
+    height: 70vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: 0 -4px 20px rgba(26, 26, 46, 0.12);
+    transform: translateY(calc(100% - 96px));
+    transition: transform 0.25s ease;
+  }
+
+  .map-panel.is-expanded {
+    transform: translateY(0);
+  }
+
+  .map-panel__handle {
+    display: block;
+    flex-shrink: 0;
+    width: 100%;
+    padding: var(--space-3) 0 var(--space-2);
+    border: none;
+    background: none;
+    touch-action: none;
+  }
+
+  .map-panel__handle::before {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 4px;
+    margin: 0 auto;
+    border-radius: var(--radius-full);
+    background-color: var(--color-border);
+  }
+}
+
+/* ---- InfoWindow ---- */
+.map-infowindow {
+  padding: var(--space-2) var(--space-1);
+  min-width: 160px;
+}
+
+.map-infowindow__badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.625rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.map-infowindow__name {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.map-infowindow__area {
+  margin: 2px 0 6px;
+  font-size: 0.75rem;
+  color: var(--color-text-faint);
+}
+
+.map-infowindow__link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}

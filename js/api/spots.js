@@ -18,3 +18,8 @@ export async function fetchSpotsByCategory(category) {
 export async function fetchSpotById(id) {
   return supabase.from("spots").select("*").eq("id", id).maybeSingle();
 }
+
+/** 지도 페이지용: lat/lng이 있는 스팟 전체 (카테고리 필터는 클라이언트에서 처리) */
+export async function fetchMappableSpots() {
+  return supabase.from("spots").select("*").not("lat", "is", null).not("lng", "is", null);
+}

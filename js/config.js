@@ -9,5 +9,5 @@
 export const CONFIG = {
   SUPABASE_URL: "https://jryzwztppwbixqohitvg.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_t7UiFnWifLq5g0FZgEJXWA_PD5oiwBn",
-  NAVER_MAP_CLIENT_ID: "",
+  NAVER_MAP_CLIENT_ID: "txg1pqbo9m",
 };

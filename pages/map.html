@@ -5,21 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>地図 | 釜山やっほー</title>
   <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/pages/category.css" />
+  <link rel="stylesheet" href="/css/pages/map.css" />
 </head>
 <body data-page="map">
   <div id="app-header"></div>
 
   <main class="app-main">
-    <div class="app-main__inner">
-      <p class="placeholder-notice">地図ページは Phase 5 で実装予定です。</p>
-    </div>
+    <div id="map-root"></div>
   </main>
 
   <div id="app-tabbar"></div>
 
   <script type="module">
     import { initNav } from "/js/nav.js";
+    import { renderMapPage } from "/js/pages/map.js";
+
     initNav("map");
+    renderMapPage(document.getElementById("map-root"));
   </script>
 </body>
 </html>
