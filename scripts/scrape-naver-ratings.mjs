@@ -43,6 +43,13 @@ function jitteredDelay() {
   return REQUEST_INTERVAL_MS + Math.floor(Math.random() * JITTER_MS);
 }
 
+/** "1,234" 같은 콤마 구분 숫자 문자열을 안전하게 숫자로 바꾼다. */
+function toNumber(str) {
+  if (!str) return null;
+  const n = Number(str.replaceAll(",", ""));
+  return Number.isFinite(n) ? n : null;
+}
+
 function distanceKm(lat1, lng1, lat2, lng2) {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -96,8 +103,8 @@ function extractCandidates(html) {
       name: nameMatch[1],
       lng: Number(xMatch[1]),
       lat: Number(yMatch[1]),
-      rating: scoreMatch ? Number(scoreMatch[1]) : null,
-      reviewCount: countMatch ? Number(countMatch[1]) : null,
+      rating: toNumber(scoreMatch?.[1]),
+      reviewCount: toNumber(countMatch?.[1]),
     });
   }
 
@@ -114,8 +121,8 @@ function extractCandidates(html) {
       name: nameMatch[1],
       lng: Number(xMatch[1]),
       lat: Number(yMatch[1]),
-      rating: scoreMatch?.[1] ? Number(scoreMatch[1]) : null,
-      reviewCount: countMatch ? Number(countMatch[1]) : null,
+      rating: toNumber(scoreMatch?.[1]),
+      reviewCount: toNumber(countMatch?.[1]),
     });
   }
 

@@ -87,7 +87,7 @@ export async function renderCategoryPage(root) {
     area: ALL_AREAS,
     keyword: initialKeyword,
     viewMode: "grid",
-    sortMode: "name",
+    sortMode: "popularity",
   };
 
   root.innerHTML = `
