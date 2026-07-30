@@ -49,7 +49,7 @@ function renderHeader(activePage) {
       <a class="app-header__brand" href="${resolveHref("/index.html")}">
         <span class="app-header__logo">${ICONS.logo}</span>
         <span>
-          <span class="app-header__title">釜山 야-호-</span><br />
+          <span class="app-header__title">ヤーホー</span><br />
           <span class="app-header__subtitle">BUSAN TRAVEL GUIDE</span>
         </span>
       </a>
