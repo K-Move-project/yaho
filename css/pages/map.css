@@ -252,3 +252,22 @@ body[data-page="map"] .app-main {
   font-weight: 600;
   color: var(--color-primary);
 }
+
+.map-infowindow__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: 2px;
+}
+
+.map-infowindow__directions {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-accent);
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  white-space: nowrap;
+}

@@ -62,13 +62,24 @@ function clusterCellSize(zoom) {
   return 0;
 }
 
+// Naver Mapの新UI（map.naver.com/p/...）が使う非公式URL形式。公式に文書化されたWeb用
+// 길찾기 URLが無いため、公開されているshare linkの構造を参考にした暫定実装。
+// 出発地を "-" のままにしておくと、Naver Map側で現在地を出発地として自動的に案内してくれる。
+function naverDirectionsUrl(spot) {
+  const name = encodeURIComponent(spot.name_ja ?? "");
+  return `https://map.naver.com/p/directions/-/${spot.lng},${spot.lat},${name}/-/walk`;
+}
+
 function infoWindowHtml(spot, meta) {
   return `
     <div class="map-infowindow">
       <span class="map-infowindow__badge" style="background:${meta.bg};color:${meta.color}">${meta.label}</span>
       <p class="map-infowindow__name">${spot.name_ja}</p>
       <p class="map-infowindow__area">${spot.area ?? ""}</p>
-      <a class="map-infowindow__link" href="spot-detail.html?id=${encodeURIComponent(spot.id)}">詳細を見る →</a>
+      <div class="map-infowindow__actions">
+        <a class="map-infowindow__link" href="spot-detail.html?id=${encodeURIComponent(spot.id)}">詳細を見る →</a>
+        <a class="map-infowindow__directions" href="${naverDirectionsUrl(spot)}" target="_blank" rel="noopener noreferrer">経路案内</a>
+      </div>
     </div>
   `;
 }
