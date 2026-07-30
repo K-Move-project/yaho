@@ -5,7 +5,11 @@
  * 실제 Supabase 연동은 Phase 2 이후에 이 mock 데이터를 대체한다.
  */
 
+import { supabase } from "../supabaseClient.js";
+import { fetchAllFestivals } from "../api/festivals.js";
+import { fetchAllCourses } from "../api/courses.js";
 import { CATEGORY_META } from "../constants/categories.js";
+import { computeFestivalStatus, FESTIVAL_STATUS_META } from "../utils/festival-status.js";
 
 const ICONS = {
   search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
@@ -55,62 +59,16 @@ const POPULAR_AREAS = [
   },
 ];
 
-const EVENTS = [
-  {
-    id: "ocean-festival",
-    title: "釜山海洋祭り",
-    date: "7/25 – 8/3",
-    location: "海雲台",
-    image: "https://images.unsplash.com/photo-1601900245655-7719650f5b7a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-    status: "開催中",
-  },
-  {
-    id: "biff",
-    title: "釜山国際映画祭",
-    date: "10/1 – 10/10",
-    location: "南浦洞",
-    image: "https://images.unsplash.com/photo-1776439287079-f95b22f287b1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-    status: "予定",
-  },
-  {
-    id: "fireworks",
-    title: "釜山花火祭り",
-    date: "10/25",
-    location: "広安里",
-    image: "https://images.unsplash.com/photo-1695730435725-861079fcf917?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-    status: "予定",
-  },
-];
+// events.html/courses.jsとフィルター無し(デフォルト表示)時の並び順を合わせるための定数・関数。
+const STATUS_ORDER = ["ongoing", "upcoming", "ended"];
 
-const COURSES = [
-  {
-    id: "cospa",
-    title: "1日 コスパコース",
-    subtitle: "予算・日程ベース",
-    budget: "¥5,000〜",
-    duration: "1日",
-    spots: 5,
-    image: "https://images.unsplash.com/photo-1628532429788-c35922b5e6c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-  },
-  {
-    id: "coastal",
-    title: "2日 海沿いコース",
-    subtitle: "絶景スポット巡り",
-    budget: "¥8,000〜",
-    duration: "2日",
-    spots: 8,
-    image: "https://images.unsplash.com/photo-1591520284162-8e64eceebacf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-  },
-  {
-    id: "food-tour",
-    title: "グルメ集中コース",
-    subtitle: "釜山B級グルメ食べ歩き",
-    budget: "¥6,000〜",
-    duration: "1日",
-    spots: 7,
-    image: "https://images.unsplash.com/photo-1549282138-86f0a2e1b8ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-  },
-];
+function formatEventDate(start, end) {
+  const fmt = (d) => {
+    const [y, m, day] = d.split("-");
+    return `${Number(m)}/${Number(day)}`;
+  };
+  return start === end ? fmt(start) : `${fmt(start)} – ${fmt(end)}`;
+}
 
 function heroSection() {
   return `
@@ -193,19 +151,20 @@ function areasSection() {
   `;
 }
 
-function eventCard(event) {
-  const isOngoing = event.status === "開催中";
+function eventCard(festival) {
+  const status = computeFestivalStatus(festival.start_date, festival.end_date);
+  const meta = FESTIVAL_STATUS_META[status];
   return `
-    <a class="home-list-card" href="pages/event-detail.html?id=${event.id}">
+    <a class="home-list-card" href="pages/event-detail.html?id=${encodeURIComponent(festival.id)}">
       <div class="home-list-card__image">
-        <img src="${event.image}" alt="${event.title}" loading="lazy" />
+        <img src="${festival.image_url ?? ""}" alt="${festival.title_ja}" loading="lazy" onerror="this.style.display='none'" />
       </div>
       <div class="home-list-card__body">
-        <span class="home-list-card__badge${isOngoing ? " is-ongoing" : ""}">${event.status}</span>
-        <p class="home-list-card__title">${event.title}</p>
+        <span class="home-list-card__badge${status === "ongoing" ? " is-ongoing" : ""}">${meta.label}</span>
+        <p class="home-list-card__title">${festival.title_ja}</p>
         <div class="home-list-card__meta">
-          <span>${ICONS.clock}${event.date}</span>
-          <span>${ICONS.mapPin}${event.location}</span>
+          <span>${ICONS.clock}${formatEventDate(festival.start_date, festival.end_date)}</span>
+          ${festival.area ? `<span>${ICONS.mapPin}${festival.area}</span>` : ""}
         </div>
       </div>
     </a>
@@ -213,22 +172,39 @@ function eventCard(event) {
 }
 
 function courseCard(course) {
+  const spotsCount = (course.schedule ?? []).length;
   return `
-    <a class="home-list-card" href="pages/course-detail.html?id=${course.id}">
+    <a class="home-list-card" href="pages/course-detail.html?id=${encodeURIComponent(course.id)}">
       <div class="home-list-card__image">
-        <img src="${course.image}" alt="${course.title}" loading="lazy" />
+        <img src="${course.image_url ?? ""}" alt="${course.title_ja}" loading="lazy" onerror="this.style.display='none'" />
       </div>
       <div class="home-list-card__body">
-        <p class="home-list-card__title">${course.title}</p>
-        <p class="home-list-card__subtitle">${course.subtitle}</p>
+        <p class="home-list-card__title">${course.title_ja}</p>
+        ${course.subtitle_ja ? `<p class="home-list-card__subtitle">${course.subtitle_ja}</p>` : ""}
         <div class="home-list-card__meta">
-          <span class="home-list-card__pill">${course.duration}</span>
-          <span>${course.budget}</span>
-          <span>${course.spots}スポット</span>
+          <span class="home-list-card__pill">${course.duration_label ?? ""}</span>
+          <span>${course.budget_label ?? ""}</span>
+          <span>${spotsCount}スポット</span>
         </div>
       </div>
     </a>
   `;
+}
+
+function skeletonListCards(count) {
+  return Array.from({ length: count })
+    .map(
+      () => `
+        <div class="home-list-card">
+          <div class="skeleton" style="width:80px;height:80px;flex-shrink:0;"></div>
+          <div style="flex:1;padding:8px 12px;display:flex;flex-direction:column;gap:6px;justify-content:center;">
+            <div class="skeleton" style="height:11px;width:60%;"></div>
+            <div class="skeleton" style="height:13px;width:80%;"></div>
+          </div>
+        </div>
+      `
+    )
+    .join("");
 }
 
 function eventsAndCoursesSection() {
@@ -239,20 +215,20 @@ function eventsAndCoursesSection() {
           <h2>${ICONS.calendar}<span>開催中の行事・お祭り</span></h2>
           <a class="home-section__more" href="pages/events.html">もっと見る${ICONS.chevronRight}</a>
         </div>
-        <div class="home-list">${EVENTS.map(eventCard).join("")}</div>
+        <div class="home-list" data-events-list>${skeletonListCards(3)}</div>
       </div>
       <div>
         <div class="home-section__head">
           <h2>${ICONS.navigation}<span>おすすめコース</span></h2>
           <a class="home-section__more" href="pages/courses.html">もっと見る${ICONS.chevronRight}</a>
         </div>
-        <div class="home-list">${COURSES.map(courseCard).join("")}</div>
+        <div class="home-list" data-courses-list>${skeletonListCards(3)}</div>
       </div>
     </section>
   `;
 }
 
-export function renderHome(root) {
+export async function renderHome(root) {
   root.innerHTML = [
     heroSection(),
     categoriesSection(),
@@ -268,4 +244,33 @@ export function renderHome(root) {
       window.location.href = `pages/category.html?keyword=${encodeURIComponent(keyword)}`;
     }
   });
+
+  if (!supabase) return;
+
+  const eventsListEl = root.querySelector("[data-events-list]");
+  const coursesListEl = root.querySelector("[data-courses-list]");
+
+  // events.html/courses.htmlそれぞれのデフォルト(フィルター無し)表示と同じ並び順の
+  // 先頭3件を切り出す。並び替えロジック自体は各ページ側と重複するが、home.jsだけで
+  // 完結させるため意図的にここでも計算する。
+  const [{ data: festivals }, { data: courses }] = await Promise.all([fetchAllFestivals(), fetchAllCourses()]);
+
+  const topEvents = (festivals ?? [])
+    .map((f) => ({ ...f, _status: computeFestivalStatus(f.start_date, f.end_date) }))
+    .sort(
+      (a, b) =>
+        STATUS_ORDER.indexOf(a._status) - STATUS_ORDER.indexOf(b._status) || a.start_date.localeCompare(b.start_date)
+    )
+    .slice(0, 3);
+
+  eventsListEl.innerHTML = topEvents.length
+    ? topEvents.map(eventCard).join("")
+    : `<p class="state-message">開催予定のイベントがありません。</p>`;
+
+  // fetchAllCoursesが既にfeatured desc, budget_level ascで返すため、追加の並び替えは不要。
+  const topCourses = (courses ?? []).slice(0, 3);
+
+  coursesListEl.innerHTML = topCourses.length
+    ? topCourses.map(courseCard).join("")
+    : `<p class="state-message">コース情報がありません。</p>`;
 }
