@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>私たちについて | ヤーホー</title>
+  <link rel="stylesheet" href="../css/common.css" />
+  <link rel="stylesheet" href="../css/pages/about.css" />
+</head>
+<body data-page="about">
+  <div id="app-header"></div>
+
+  <main class="app-main">
+    <div class="app-main__inner about-page">
+      <section class="about-hero">
+        <h1 class="about-hero__title">私たちについて</h1>
+        <p class="about-hero__tagline">ヤーホー</p>
+      </section>
+
+      <section class="about-section">
+        <h2 class="about-section__title">プロジェクト紹介</h2>
+        <p class="about-section__text">
+          「ヤーホー」は、K-Move研修課程に在学中のメンバーが企画・開発した、
+          日本人観光客向けの釜山旅行情報Webサービスです。
+        </p>
+        <p class="about-section__text">
+          近年、釜山を訪れる日本人観光客は増えていますが、実際に旅行を決める段階では
+          旅費の負担、円安、言葉の壁、出入国手続きの煩わしさといった現実的な不安が
+          伴います。私たちのサービスは、こうした不安を少しでも解消できるよう、日本語で
+          釜山の観光地・グルメ・宿泊情報を案内し、有名観光地中心ではなく、日本人旅行者に
+          実際に人気のある地域やコースを紹介しています。
+        </p>
+        <p class="about-section__text">
+          地図をベースにした情報検索、予算・日程に合わせたおすすめコース、旅行期間中に
+          開催される行事・お祭り情報までを一箇所で確認できるようにし、初めて釜山を訪れる
+          旅行者でも言葉の心配なく安心して旅行の準備ができることを、このプロジェクトの
+          目標としています。
+        </p>
+      </section>
+
+      <section class="about-section">
+        <h2 class="about-section__title">開発チーム紹介</h2>
+        <p class="about-section__text">
+          本プロジェクトは、K-Move在学中のチームプロジェクトとして開発されました。
+        </p>
+        <ul class="about-team">
+          <li class="about-team__member">
+            <span class="about-team__name">권우형</span>
+            <span class="about-team__role">開発</span>
+          </li>
+          <li class="about-team__member">
+            <span class="about-team__name">이유정</span>
+            <span class="about-team__role">開発</span>
+          </li>
+          <li class="about-team__member">
+            <span class="about-team__name">문종우</span>
+            <span class="about-team__role">開発</span>
+          </li>
+          <li class="about-team__member">
+            <span class="about-team__name">추연승</span>
+            <span class="about-team__role">開発</span>
+          </li>
+        </ul>
+      </section>
+
+      <div id="app-footer"></div>
+    </div>
+  </main>
+
+  <div id="app-tabbar"></div>
+
+  <script type="module">
+    import { initNav } from "../js/nav.js";
+
+    initNav("about");
+  </script>
+</body>
+</html>

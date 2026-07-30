@@ -33,6 +33,9 @@ const TABS = [
   { key: "courses", label: "おすすめコース", href: resolveHref("/pages/courses.html"), icon: ICONS.courses },
 ];
 
+// About Usは下段タブバーには含めず、デスクトップ上部メニューとフッターからのみ遷移する。
+const ABOUT_LINK = { key: "about", label: "私たちについて", href: resolveHref("/pages/about.html") };
+
 function renderHeader(activePage) {
   const navItems = TABS.map((tab) => {
     const isActive = tab.key === activePage;
@@ -44,6 +47,13 @@ function renderHeader(activePage) {
     `;
   }).join("");
 
+  const aboutIsActive = activePage === ABOUT_LINK.key;
+  const aboutItem = `
+    <a class="app-header__nav-item${aboutIsActive ? " is-active" : ""}" href="${ABOUT_LINK.href}">
+      <span>${ABOUT_LINK.label}</span>
+    </a>
+  `;
+
   return `
     <header class="app-header">
       <a class="app-header__brand" href="${resolveHref("/index.html")}">
@@ -53,7 +63,7 @@ function renderHeader(activePage) {
           <span class="app-header__subtitle">BUSAN TRAVEL GUIDE</span>
         </span>
       </a>
-      <nav class="app-header__nav">${navItems}</nav>
+      <nav class="app-header__nav">${navItems}${aboutItem}</nav>
     </header>
   `;
 }
@@ -71,17 +81,33 @@ function renderTabBar(activePage) {
   return `<nav class="app-tabbar">${items}</nav>`;
 }
 
+function renderFooter() {
+  return `
+    <footer class="app-footer">
+      <p class="app-footer__lead">
+        ヤーホーは、費用や言葉の壁で悩む日本人旅行者のために作られた、日本語で楽しむ釜山観光ガイドです。
+      </p>
+      <a class="app-footer__about-link" href="${ABOUT_LINK.href}">${ABOUT_LINK.label}</a>
+      <p class="app-footer__copyright">© 2026 ヤーホー</p>
+    </footer>
+  `;
+}
+
 /**
- * @param {'home'|'map'|'events'|'courses'|null} activePage 활성 탭 (탭에 속하지 않는 상세 페이지는 null)
+ * @param {'home'|'map'|'events'|'courses'|'about'|null} activePage 활성 탭 (탭에 속하지 않는 상세 페이지는 null)
  */
 export function initNav(activePage = null) {
   const headerEl = document.getElementById("app-header");
   const tabbarEl = document.getElementById("app-tabbar");
+  const footerEl = document.getElementById("app-footer");
 
   if (headerEl) {
     headerEl.outerHTML = renderHeader(activePage);
   }
   if (tabbarEl) {
     tabbarEl.outerHTML = renderTabBar(activePage);
+  }
+  if (footerEl) {
+    footerEl.outerHTML = renderFooter();
   }
 }

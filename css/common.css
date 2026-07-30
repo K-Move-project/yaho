@@ -365,3 +365,32 @@ button {
     padding-bottom: 0;
   }
 }
+
+/* ---- 공통 푸터 (js/nav.js가 주입, .app-main 안 마지막 요소로 렌더링) ---- */
+.app-footer {
+  margin-top: var(--space-6);
+  padding: var(--space-5) var(--space-4);
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.app-footer__lead {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.app-footer__about-link {
+  display: inline-block;
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.app-footer__copyright {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
+}
