@@ -58,6 +58,12 @@
   white-space: nowrap;
 }
 
+.category-sort {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
 .category-count {
   margin: 0 0 var(--space-3);
   color: var(--color-text-muted);

@@ -97,6 +97,24 @@
   line-height: 1.7;
 }
 
+.event-detail__source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+}
+
+.event-detail__source-link svg {
+  width: 14px;
+  height: 14px;
+}
+
 .event-detail__section-title {
   margin: var(--space-5) 0 var(--space-3);
   font-size: var(--font-size-lg);

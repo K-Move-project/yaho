@@ -13,6 +13,29 @@ const ICONS = {
 };
 
 const ALL_AREAS = "すべて";
+const SORT_MODES = [
+  { id: "name", label: "名前順" },
+  { id: "popularity", label: "人気順" },
+];
+
+/**
+ * 人気順は現時点では rating(暫定値、ほとんどの実データには未設定)を使う。
+ * 将来レビューAPIと連携したら、この比較関数だけ差し替えれば良い。
+ */
+function sortSpots(spots, sortMode) {
+  const sorted = [...spots];
+  if (sortMode === "popularity") {
+    sorted.sort((a, b) => {
+      if (a.rating == null && b.rating == null) return a.name_ja.localeCompare(b.name_ja, "ja");
+      if (a.rating == null) return 1;
+      if (b.rating == null) return -1;
+      return b.rating - a.rating;
+    });
+  } else {
+    sorted.sort((a, b) => a.name_ja.localeCompare(b.name_ja, "ja"));
+  }
+  return sorted;
+}
 
 function goBack() {
   if (window.history.length > 1) {
@@ -64,6 +87,7 @@ export async function renderCategoryPage(root) {
     area: ALL_AREAS,
     keyword: initialKeyword,
     viewMode: "grid",
+    sortMode: "name",
   };
 
   root.innerHTML = `
@@ -74,6 +98,7 @@ export async function renderCategoryPage(root) {
         <input type="search" class="category-search__input" placeholder="${meta.label}を検索..." value="${initialKeyword}" />
       </div>
       <div class="category-area-filter" data-area-filter></div>
+      <div class="category-sort" data-sort-filter></div>
       <p class="category-count" data-count></p>
       <div class="category-results" data-results>${skeletonCards(6)}</div>
     </div>
@@ -99,16 +124,33 @@ export async function renderCategoryPage(root) {
   });
 
   const areaFilterEl = root.querySelector("[data-area-filter]");
+  const sortFilterEl = root.querySelector("[data-sort-filter]");
   const countEl = root.querySelector("[data-count]");
   const resultsEl = root.querySelector("[data-results]");
 
   function getFilteredSpots() {
     const keyword = state.keyword.toLowerCase();
-    return state.allSpots.filter((spot) => {
+    const filtered = state.allSpots.filter((spot) => {
       const areaOk = state.area === ALL_AREAS || spot.area === state.area;
       const haystack = [spot.name_ja, spot.name_ko, ...(spot.tags ?? [])].filter(Boolean).join(" ").toLowerCase();
       const keywordOk = !keyword || haystack.includes(keyword);
       return areaOk && keywordOk;
+    });
+    return sortSpots(filtered, state.sortMode);
+  }
+
+  function renderSortFilter() {
+    sortFilterEl.innerHTML = SORT_MODES.map(({ id, label }) => {
+      const isActive = id === state.sortMode;
+      const style = isActive ? `background:${meta.color};color:#fff;border-color:${meta.color}` : "";
+      return `<button type="button" class="category-chip${isActive ? " is-active" : ""}" data-sort="${id}" style="${style}">${label}</button>`;
+    }).join("");
+    sortFilterEl.querySelectorAll("[data-sort]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.sortMode = btn.dataset.sort;
+        renderSortFilter();
+        renderResults();
+      });
     });
   }
 
@@ -161,6 +203,8 @@ export async function renderCategoryPage(root) {
       renderResults();
     });
   }
+
+  renderSortFilter();
 
   if (!supabase) {
     resultsEl.innerHTML = `

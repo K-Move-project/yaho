@@ -7,6 +7,7 @@ const ICONS = {
   back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
   clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>',
   mapPin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-7.1-7-12a7 7 0 0 1 14 0c0 4.9-7 12-7 12Z"/><circle cx="12" cy="9" r="2.4"/></svg>',
+  externalLink: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>',
 };
 
 function goBack() {
@@ -125,6 +126,16 @@ export async function renderEventDetailPage(root) {
       }
 
       ${festival.description_ja ? `<p class="event-detail__description">${festival.description_ja}</p>` : ""}
+
+      ${
+        festival.source_url
+          ? `
+        <a class="event-detail__source-link" href="${festival.source_url}" target="_blank" rel="noopener noreferrer">
+          公式サイトで詳細を見る${ICONS.externalLink}
+        </a>
+      `
+          : ""
+      }
 
       ${
         relatedSpot
