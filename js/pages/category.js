@@ -13,6 +13,40 @@ const ICONS = {
 };
 
 const ALL_AREAS = "すべて";
+
+// カテゴリー別「おすすめ」固定枠 — 並び替えトグルに関係なく常に先頭に表示する5件。
+// 表示順もこの配列の並び順に固定する。
+const RECOMMENDED_SPOT_IDS_BY_CATEGORY = {
+  tourist: [
+    "tour-281494", // 광안리해수욕장
+    "haeundae-beach", // 해운대해수욕장
+    "tour-2946819", // 영도흰여울마을(흰여울문화마을)
+    "tour-132190", // 자갈치시장
+    "tour-1018702", // 국제시장
+  ],
+  food: [
+    "tour-2869405", // 영동밀면&돼지국밥
+    "tour-2786779", // 해운대 가야밀면
+    "tour-2840998", // 오리한상 명지본점
+    "tour-2759609", // 쌍둥이돼지국밥 본점
+    "tour-2844698", // 제주항통갈치
+  ],
+  stay: [
+    "tour-142853", // 파라다이스 호텔 부산
+    "tour-2503780", // 아난티 앳 부산 코브
+    "tour-142998", // 롯데호텔 부산
+    "tour-3044634", // 크라운 하버 호텔 부산
+    "tour-2531399", // 더파크 게스트하우스
+  ],
+  experience: [
+    "tour-2790332", // 부산요트투어 3355마린
+    "hanbok", // 한복대여체험
+    "kpop", // K-POP댄스체험
+    "tour-767084", // 신세계백화점 센텀시티점
+    "biff", // BIFF광장 영화체험
+  ],
+};
+
 const SORT_MODES = [
   { id: "name", label: "名前順" },
   { id: "popularity", label: "人気順" },
@@ -136,7 +170,17 @@ export async function renderCategoryPage(root) {
       const keywordOk = !keyword || haystack.includes(keyword);
       return areaOk && keywordOk;
     });
-    return sortSpots(filtered, state.sortMode);
+    const sorted = sortSpots(filtered, state.sortMode);
+    const recommendedIds = RECOMMENDED_SPOT_IDS_BY_CATEGORY[categoryId];
+    if (!recommendedIds) return sorted;
+
+    const recommended = [];
+    const rest = [];
+    sorted.forEach((spot) => {
+      (recommendedIds.includes(spot.id) ? recommended : rest).push(spot);
+    });
+    recommended.sort((a, b) => recommendedIds.indexOf(a.id) - recommendedIds.indexOf(b.id));
+    return [...recommended, ...rest];
   }
 
   function renderSortFilter() {
@@ -185,7 +229,13 @@ export async function renderCategoryPage(root) {
     countEl.innerHTML = `${filtered.length}件のスポット${areaBadge}`;
     resultsEl.className = `category-results category-results--${state.viewMode}`;
     resultsEl.innerHTML = filtered.length
-      ? filtered.map((spot) => spotCardHtml(spot, state.viewMode)).join("")
+      ? filtered
+          .map((spot) =>
+            spotCardHtml(spot, state.viewMode, {
+              recommended: (RECOMMENDED_SPOT_IDS_BY_CATEGORY[categoryId] ?? []).includes(spot.id),
+            })
+          )
+          .join("")
       : `
         <div class="category-empty">
           <span class="category-empty__icon">${ICONS.emptySearch}</span>

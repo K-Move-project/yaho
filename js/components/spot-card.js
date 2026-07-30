@@ -9,10 +9,12 @@ const ICONS = {
  * 스팟 카드 마크업. category.js(그리드/리스트)와 area-detail.js(그리드)에서 공용으로 쓴다.
  * @param {object} spot spots 테이블 행
  * @param {'grid'|'list'} viewMode
+ * @param {{ recommended?: boolean }} [options] recommended: true면 "おすすめ" 배지를 표시
  */
-export function spotCardHtml(spot, viewMode = "grid") {
+export function spotCardHtml(spot, viewMode = "grid", { recommended = false } = {}) {
   const meta = categoryMeta(spot.category);
   const tags = spot.tags ?? [];
+  const badgeHtml = recommended ? `<span class="category-card__badge">おすすめ</span>` : "";
   const shownTags = viewMode === "grid" ? tags.slice(0, 2) : tags.slice(0, 3);
   const tagHtml = shownTags
     .map((tag) => `<span class="category-card__tag" style="background:${meta.bg};color:${meta.color}">${tag}</span>`)
@@ -35,6 +37,7 @@ export function spotCardHtml(spot, viewMode = "grid") {
     <a class="category-card category-card--${viewMode}" href="spot-detail.html?id=${encodeURIComponent(spot.id)}">
       <div class="category-card__image">
         ${imageHtml}
+        ${badgeHtml}
       </div>
       <div class="category-card__body">
         <p class="category-card__name">${spot.name_ja}</p>
