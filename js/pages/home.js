@@ -151,13 +151,21 @@ function areasSection() {
   `;
 }
 
+// DB의 image_url은 pages/*.html(1階層下)에서 그리는 걸 기준으로 저장돼 있어
+// (예: "../assets/foo.png"), 프로젝트 루트인 홈 화면에서는 앞의 "../"를 떼어내야 한다.
+// http(s) 절대경로는 그대로 둔다.
+function toHomeImageUrl(url) {
+  if (!url) return url;
+  return url.startsWith("../") ? url.slice(3) : url;
+}
+
 function eventCard(festival) {
   const status = computeFestivalStatus(festival.start_date, festival.end_date);
   const meta = FESTIVAL_STATUS_META[status];
   return `
     <a class="home-list-card" href="pages/event-detail.html?id=${encodeURIComponent(festival.id)}">
       <div class="home-list-card__image">
-        <img src="${festival.image_url ?? ""}" alt="${festival.title_ja}" loading="lazy" onerror="this.style.display='none'" />
+        <img src="${toHomeImageUrl(festival.image_url) ?? ""}" alt="${festival.title_ja}" loading="lazy" onerror="this.style.display='none'" />
       </div>
       <div class="home-list-card__body">
         <span class="home-list-card__badge${status === "ongoing" ? " is-ongoing" : ""}">${meta.label}</span>
@@ -176,7 +184,7 @@ function courseCard(course) {
   return `
     <a class="home-list-card" href="pages/course-detail.html?id=${encodeURIComponent(course.id)}">
       <div class="home-list-card__image">
-        <img src="${course.image_url ?? ""}" alt="${course.title_ja}" loading="lazy" onerror="this.style.display='none'" />
+        <img src="${toHomeImageUrl(course.image_url) ?? ""}" alt="${course.title_ja}" loading="lazy" onerror="this.style.display='none'" />
       </div>
       <div class="home-list-card__body">
         <p class="home-list-card__title">${course.title_ja}</p>
