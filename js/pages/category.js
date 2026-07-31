@@ -44,6 +44,7 @@ const RECOMMENDED_SPOT_IDS_BY_CATEGORY = {
     "kpop", // K-POP댄스체험
     "tour-767084", // 신세계백화점 센텀시티점
     "biff", // BIFF광장 영화체험
+    "t1-basecamp-busan", // T1 베이스캠프 부산점
   ],
 };
 
