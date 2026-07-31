@@ -5,7 +5,8 @@ export async function fetchAllCourses() {
     .from("courses")
     .select("*")
     .order("featured", { ascending: false })
-    .order("budget_level", { ascending: true });
+    .order("budget_level", { ascending: true })
+    .order("created_at", { ascending: true });
 }
 
 /** @param {string} id */
