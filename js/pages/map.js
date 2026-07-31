@@ -310,6 +310,23 @@ export async function renderMapPage(root) {
   renderFilter();
   applyFilter();
 
+  function showCurrentLocation(lat, lng, zoom = 15) {
+    const latlng = new naver.maps.LatLng(lat, lng);
+    map.setCenter(latlng);
+    map.setZoom(zoom);
+    if (currentLocationMarker) currentLocationMarker.setMap(null);
+    currentLocationMarker = new naver.maps.Marker({
+      position: latlng,
+      map,
+      icon: {
+        content:
+          '<div style="width:16px;height:16px;border-radius:50%;background:#2b9bf4;border:3px solid #fff;box-shadow:0 0 0 4px rgba(43,155,244,.3)"></div>',
+        size: new naver.maps.Size(16, 16),
+        anchor: new naver.maps.Point(8, 8),
+      },
+    });
+  }
+
   // ---- 現在地ボタン ----
   root.querySelector("[data-locate]").addEventListener("click", () => {
     if (!navigator.geolocation) {
@@ -317,22 +334,7 @@ export async function renderMapPage(root) {
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const latlng = new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-        map.setCenter(latlng);
-        map.setZoom(15);
-        if (currentLocationMarker) currentLocationMarker.setMap(null);
-        currentLocationMarker = new naver.maps.Marker({
-          position: latlng,
-          map,
-          icon: {
-            content:
-              '<div style="width:16px;height:16px;border-radius:50%;background:#2b9bf4;border:3px solid #fff;box-shadow:0 0 0 4px rgba(43,155,244,.3)"></div>',
-            size: new naver.maps.Size(16, 16),
-            anchor: new naver.maps.Point(8, 8),
-          },
-        });
-      },
+      (pos) => showCurrentLocation(pos.coords.latitude, pos.coords.longitude),
       () => alert("現在地を取得できませんでした。位置情報の利用を許可してください。"),
       { enableHighAccuracy: true, timeout: 8000 }
     );
@@ -456,10 +458,12 @@ export async function renderMapPage(root) {
     expandSheet();
   }
 
-  // ---- spot-detail/course-detail에서 넘어온 경우 ----
+  // ---- spot-detail/course-detail/ホーム画面の現在地ボタンから넘어온 경우 ----
   const params = new URLSearchParams(window.location.search);
   const courseId = params.get("course");
   const focusId = params.get("spot");
+  const latParam = params.get("lat");
+  const lngParam = params.get("lng");
 
   if (courseId) {
     showCourseRoute(courseId);
@@ -474,5 +478,8 @@ export async function renderMapPage(root) {
         if (marker) focusSpot(spot, marker);
       });
     }
+  } else if (latParam && lngParam) {
+    // ホーム画面で取得済みの現在地なので、ここで改めて位置情報の許可を求めない。
+    showCurrentLocation(Number(latParam), Number(lngParam));
   }
 }

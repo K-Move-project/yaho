@@ -88,7 +88,7 @@ function heroSection() {
               aria-label="検索"
             />
           </form>
-          <button type="button" class="home-hero__geo" disabled>
+          <button type="button" class="home-hero__geo" data-geo-btn>
             ${ICONS.navigation}
             <span>現在地周辺を探す</span>
           </button>
@@ -243,6 +243,27 @@ export async function renderHome(root) {
     if (keyword) {
       window.location.href = `pages/category.html?keyword=${encodeURIComponent(keyword)}`;
     }
+  });
+
+  // 現在地を取得したら地図ページに座標を渡し、map.js側で改めて位置情報を
+  // 取得し直さずにその場所を中心に表示する(許可プロンプトは一度だけで済む)。
+  const geoBtn = root.querySelector("[data-geo-btn]");
+  geoBtn.addEventListener("click", () => {
+    if (!navigator.geolocation) {
+      alert("この端末では現在地取得に対応していません。");
+      return;
+    }
+    geoBtn.disabled = true;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        window.location.href = `pages/map.html?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`;
+      },
+      () => {
+        alert("現在地を取得できませんでした。位置情報の利用を許可してください。");
+        geoBtn.disabled = false;
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
   });
 
   if (!supabase) return;
